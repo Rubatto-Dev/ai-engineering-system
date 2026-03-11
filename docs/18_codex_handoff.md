@@ -90,10 +90,10 @@
   - viabilidade: `media`
   - duracao estimada: `9-16` semanas (media `12`)
   - valor estimado: `0.71`
-- Ajustes de produto concluídos:
+- Ajustes de produto concluidos:
   - `ProjectManagerAgent` agora escreve timeline de roadmap a partir do `proposal_profile`.
   - `scripts/run_pipeline.py` suporta `--proposal-file` e `--strict-external`.
-  - cobertura unitária adicionada para roadmap orientado por proposta.
+  - cobertura unitaria adicionada para roadmap orientado por proposta.
 - Gates tecnicos revalidados:
   - `test:python` -> `35 passed`
   - `quality:python` -> `ok: true`
@@ -161,6 +161,48 @@
   - `audit:safety` -> `ok: true`
 - Proxima etapa recomendada:
   - refinar calibracao com janela temporal e regra de estabilidade por segmento.
+
+## Atualizacao Fase 3 - Etapa 18 (2026-03-11)
+
+- Objetivo da etapa:
+  - aumentar estabilidade da calibracao para evitar ajuste com historico antigo ou pouco variado.
+- Entregas:
+  - calibracao com janela temporal (`window_days`) em `decision_calibration.py`.
+  - regra de variancia minima (`min_score_spread`, `min_ambiguity_spread`).
+  - policy e quality gate atualizados para validar os novos parametros.
+- Validacao:
+  - `test:python` -> `47 passed`
+  - `quality:python` -> `ok: true`
+  - `runtime:check` -> `ok: true`
+  - `audit:safety` -> `ok: true`
+- Proxima etapa recomendada:
+  - bloquear pipeline quando uma etapa nao estiver 100% validada e padronizar handoff sem brecha.
+
+## Atualizacao Fase 3 - Etapa 19 (2026-03-11)
+
+- Objetivo da etapa:
+  - garantir que nenhuma etapa avance sem validacao completa e sem contrato de comunicacao.
+- Entregas:
+  - `BaseAgent.enforce_contract` com:
+    - `handoff_packet` obrigatorio
+    - `stage_validation_ok` bloqueante
+  - quality gate com novos checks:
+    - `stage_validation_policy_configured`
+    - `communication_protocol_configured`
+  - nova policy: `config/stage_validation.json`
+  - protocolo atualizado:
+    - `protocol/AGENT_COMMUNICATION_PROTOCOL.md`
+    - `protocol/VALIDATION_RULES.md`
+  - trilha de treino oficial:
+    - `docs/32_programa_treinamento_agentes.md`
+    - `docs/33_scorecard_agentes.md`
+- Validacao:
+  - `test:python` -> `51 passed`
+  - `quality:python` -> `ok: true`
+  - `runtime:check` -> `ok: true`
+  - `audit:safety` -> `ok: true`
+- Proxima etapa recomendada:
+  - implementar leaderboard automatizado do scorecard e rodada continua em shadow mode.
 
 ## Como retomar rapido no Codex
 

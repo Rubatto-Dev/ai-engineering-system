@@ -15,6 +15,8 @@ def test_quality_gate_passes_with_default_structure(tmp_path: Path) -> None:
     assert gate["ok"] is True
     assert gate["checks"]["mcp_servers_configured"] is True
     assert gate["checks"]["sonarqube_configured"] is True
+    assert gate["checks"]["stage_validation_policy_configured"] is True
+    assert gate["checks"]["communication_protocol_configured"] is True
 
 
 @pytest.mark.unit
@@ -61,3 +63,25 @@ def test_quality_gate_fails_when_decision_policy_missing_segment_thresholds(tmp_
 
     assert gate["ok"] is False
     assert gate["checks"]["decision_policy_configured"] is False
+
+
+@pytest.mark.unit
+def test_quality_gate_fails_when_stage_validation_policy_is_missing(tmp_path: Path) -> None:
+    ensure_structure(tmp_path)
+    (tmp_path / "config" / "stage_validation.json").unlink()
+
+    gate = evaluate_quality_gate(tmp_path)
+
+    assert gate["ok"] is False
+    assert gate["checks"]["stage_validation_policy_configured"] is False
+
+
+@pytest.mark.unit
+def test_quality_gate_fails_when_communication_protocol_is_missing(tmp_path: Path) -> None:
+    ensure_structure(tmp_path)
+    (tmp_path / "protocol" / "AGENT_COMMUNICATION_PROTOCOL.md").unlink()
+
+    gate = evaluate_quality_gate(tmp_path)
+
+    assert gate["ok"] is False
+    assert gate["checks"]["communication_protocol_configured"] is False

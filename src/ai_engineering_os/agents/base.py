@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import logging
 import re
+from datetime import datetime, timezone
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -69,6 +70,20 @@ class BaseAgent:
     stage = ""
     _default_contract_root = Path(__file__).resolve().parents[3] / "agents"
     _required_contract_sections = ["Role", "Inputs", "Processing", "Outputs", "Handoff"]
+    _required_handoff_packet_sections = [
+        "from_agent_id",
+        "from_agent_name",
+        "from_stage",
+        "to_agent_id",
+        "status",
+        "summary",
+        "artifacts",
+        "open_questions",
+        "assumptions",
+        "risks",
+        "validation_snapshot",
+        "validated_at_utc",
+    ]
 
     def __init__(
         self,
@@ -86,6 +101,9 @@ class BaseAgent:
         raise NotImplementedError
 
     def enforce_contract(self, result: AgentResult) -> AgentResult:
+        original_notes_present = isinstance(result.notes, str) and bool(result.notes.strip())
+        result.checks["initial_notes_present"] = original_notes_present
+
         schema_errors = self._validate_result_shape(result)
         result.checks["result_schema_ok"] = not schema_errors
         result.checks["result_schema_errors"] = schema_errors
@@ -97,41 +115,64 @@ class BaseAgent:
 
         contract = self._load_contract()
         if not contract:
-            result.checks.setdefault("contract_loaded", False)
-            result.checks.setdefault("contract_handoff_match", True)
-            return result
-
-        contract_path, contract_text = contract
-        phase = self._contract_phase()
-        expected_handoff = self._expected_handoff(contract_text, phase)
-
-        result.checks["contract_loaded"] = True
-        result.checks["contract_file"] = contract_path.name
-        result.checks["contract_sha256"] = hashlib.sha256(contract_text.encode("utf-8")).hexdigest()[:12]
-        missing_sections = [
-            section for section in self._required_contract_sections if not self._extract_section(contract_text, section)
-        ]
-        result.checks["contract_required_sections_ok"] = not missing_sections
-        result.checks["contract_missing_sections"] = missing_sections
-        if missing_sections:
+            result.checks["contract_loaded"] = False
+            result.checks["contract_required_sections_ok"] = False
+            result.checks["contract_missing_sections"] = self._required_contract_sections
+            result.checks["contract_handoff_match"] = False
+            result.checks["contract_expected_handoff"] = ""
+            issue = "contract_file_missing"
             result.status = "failed"
-            missing_text = ",".join(missing_sections)
-            issue = f"contract_sections_missing={missing_text}"
+            result.notes = f"{result.notes}; {issue}" if result.notes else issue
+        else:
+            contract_path, contract_text = contract
+            phase = self._contract_phase()
+            expected_handoff = self._expected_handoff(contract_text, phase)
+
+            result.checks["contract_loaded"] = True
+            result.checks["contract_file"] = contract_path.name
+            result.checks["contract_sha256"] = hashlib.sha256(contract_text.encode("utf-8")).hexdigest()[:12]
+            missing_sections = [
+                section for section in self._required_contract_sections if not self._extract_section(contract_text, section)
+            ]
+            result.checks["contract_required_sections_ok"] = not missing_sections
+            result.checks["contract_missing_sections"] = missing_sections
+            if missing_sections:
+                result.status = "failed"
+                missing_text = ",".join(missing_sections)
+                issue = f"contract_sections_missing={missing_text}"
+                result.notes = f"{result.notes}; {issue}" if result.notes else issue
+
+            if expected_handoff is None:
+                result.checks["contract_handoff_match"] = True
+                result.checks["contract_expected_handoff"] = ""
+            else:
+                result.checks["contract_expected_handoff"] = expected_handoff
+                match = result.handoff == expected_handoff
+                result.checks["contract_handoff_match"] = match
+                if not match:
+                    expected = expected_handoff or "[END]"
+                    actual = result.handoff or "[END]"
+                    mismatch = f"contract_handoff_mismatch expected={expected} actual={actual}"
+                    result.status = "failed"
+                    result.notes = f"{result.notes}; {mismatch}" if result.notes else mismatch
+
+        handoff_errors = self._ensure_handoff_packet(result)
+        result.checks["handoff_packet_ok"] = not handoff_errors
+        result.checks["handoff_packet_errors"] = handoff_errors
+        if handoff_errors:
+            issue = f"handoff_packet_invalid={','.join(handoff_errors)}"
+            result.status = "failed"
             result.notes = f"{result.notes}; {issue}" if result.notes else issue
 
-        if expected_handoff is None:
-            result.checks["contract_handoff_match"] = True
-            return result
-
-        result.checks["contract_expected_handoff"] = expected_handoff
-        match = result.handoff == expected_handoff
-        result.checks["contract_handoff_match"] = match
-        if not match:
-            expected = expected_handoff or "[END]"
-            actual = result.handoff or "[END]"
-            mismatch = f"contract_handoff_mismatch expected={expected} actual={actual}"
+        stage_requirements = self._stage_validation_requirements(result)
+        stage_validation_ok = all(stage_requirements.values())
+        result.checks["stage_validation_requirements"] = stage_requirements
+        result.checks["stage_validation_ok"] = stage_validation_ok
+        result.checks["stage_validation_missing"] = [key for key, value in stage_requirements.items() if not value]
+        if not stage_validation_ok:
+            issue = f"stage_not_fully_validated={','.join(result.checks['stage_validation_missing'])}"
             result.status = "failed"
-            result.notes = f"{result.notes}; {mismatch}" if result.notes else mismatch
+            result.notes = f"{result.notes}; {issue}" if result.notes else issue
         return result
 
     def _validate_result_shape(self, result: AgentResult) -> list[str]:
@@ -224,6 +265,80 @@ class BaseAgent:
             if "encerr" in normalized or "[end]" in normalized or "ultimo agente" in normalized:
                 return ""
         return None
+
+    def _ensure_handoff_packet(self, result: AgentResult) -> list[str]:
+        if not isinstance(result.outputs, dict):
+            return ["outputs_not_dict"]
+
+        packet = result.outputs.get("handoff_packet")
+        packet_payload = packet if isinstance(packet, dict) else {}
+
+        normalized = {
+            "from_agent_id": result.agent_id,
+            "from_agent_name": result.agent_name,
+            "from_stage": result.stage,
+            "to_agent_id": result.handoff,
+            "status": result.status,
+            "summary": (
+                str(packet_payload.get("summary", result.notes)).strip()
+                if isinstance(packet_payload.get("summary", result.notes), str)
+                else ""
+            ),
+            "artifacts": self._normalize_string_list(packet_payload.get("artifacts", result.artifacts)),
+            "open_questions": self._normalize_string_list(packet_payload.get("open_questions", [])),
+            "assumptions": self._normalize_string_list(packet_payload.get("assumptions", [])),
+            "risks": self._normalize_string_list(packet_payload.get("risks", [])),
+            "validation_snapshot": {
+                "result_schema_ok": bool(result.checks.get("result_schema_ok")),
+                "contract_loaded": bool(result.checks.get("contract_loaded")),
+                "contract_required_sections_ok": bool(result.checks.get("contract_required_sections_ok")),
+                "contract_handoff_match": bool(result.checks.get("contract_handoff_match")),
+            },
+            "validated_at_utc": datetime.now(timezone.utc).isoformat(),
+        }
+        result.outputs["handoff_packet"] = normalized
+
+        missing_sections = [section for section in self._required_handoff_packet_sections if section not in normalized]
+        errors = [f"missing_{section}" for section in missing_sections]
+
+        if normalized["to_agent_id"] and not re.fullmatch(r"\d{2}", normalized["to_agent_id"]):
+            errors.append("to_agent_id_invalid")
+        if not normalized["summary"]:
+            errors.append("summary_missing")
+        if not isinstance(normalized["validation_snapshot"], dict):
+            errors.append("validation_snapshot_invalid")
+        if not isinstance(normalized["artifacts"], list):
+            errors.append("artifacts_invalid")
+        return errors
+
+    def _stage_validation_requirements(self, result: AgentResult) -> dict[str, bool]:
+        return {
+            "result_schema_ok": bool(result.checks.get("result_schema_ok")),
+            "contract_loaded": bool(result.checks.get("contract_loaded")),
+            "contract_required_sections_ok": bool(result.checks.get("contract_required_sections_ok")),
+            "contract_handoff_match": bool(result.checks.get("contract_handoff_match")),
+            "handoff_packet_ok": bool(result.checks.get("handoff_packet_ok")),
+            "notes_present": bool(result.checks.get("initial_notes_present")),
+            "artifacts_exist": self._artifacts_exist(result.artifacts),
+        }
+
+    def _artifacts_exist(self, artifacts: list[str]) -> bool:
+        if not isinstance(artifacts, list):
+            return False
+        for artifact in artifacts:
+            if not isinstance(artifact, str) or not artifact.strip():
+                return False
+            path = Path(artifact)
+            candidate = path if path.is_absolute() else self.repo_root / path
+            if not candidate.exists():
+                return False
+        return True
+
+    @staticmethod
+    def _normalize_string_list(value: Any) -> list[str]:
+        if not isinstance(value, list):
+            return []
+        return [str(item).strip() for item in value if isinstance(item, str) and item.strip()]
 
     def _write(self, relative_path: str, content: str) -> str:
         target = self.repo_root / relative_path

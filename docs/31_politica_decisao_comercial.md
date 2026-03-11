@@ -62,6 +62,12 @@
   - registra `last_calibrated_at` na policy
   - gera relatorio em `docs/audits/decision_policy_calibration_report.json`
 
+## Controles de estabilidade da calibracao
+- `calibration.window_days`: considera apenas historico recente.
+- `calibration.min_score_spread`: bloqueia ajuste com score quase sem variacao.
+- `calibration.min_ambiguity_spread`: bloqueia ajuste com ambiguidade quase sem variacao.
+- Se os controles falharem, a calibracao preserva os thresholds atuais do segmento.
+
 ## Governanca
 - Qualquer mudanca de thresholds exige:
   - atualizar `config/decision_policy.json`

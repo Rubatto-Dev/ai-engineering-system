@@ -47,3 +47,16 @@ Gerado e atualizado automaticamente pelo pipeline.
 - Relatorio de calibracao em `docs/audits/decision_policy_calibration_report.json`
 - Comando operacional novo: `npm run policy:calibrate`
 - Suite de testes expandida para 45 testes
+
+## Release 0.3.6 - 2026-03-11
+- Calibracao endurecida com janela temporal e minimo de variancia por segmento
+- Novos parametros de calibracao em `config/decision_policy.json`
+- Quality gate validando schema de calibracao expandido
+- Suite de testes expandida para 47 testes
+
+## Release 0.3.7 - 2026-03-11
+- Stage validation bloqueante por etapa com `stage_validation_ok`
+- `handoff_packet` obrigatorio em todas as saidas de agentes
+- Nova policy `config/stage_validation.json` validada pelo quality gate
+- Programa de treinamento oficial e scorecard adicionados (`docs/32` e `docs/33`)
+- Suite de testes expandida para 51 testes

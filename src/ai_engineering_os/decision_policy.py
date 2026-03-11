@@ -84,6 +84,9 @@ _DEFAULT_POLICY: dict[str, Any] = {
     "calibration": {
         "min_samples_per_segment": 5,
         "history_file": "docs/audits/proposal_decision_history.jsonl",
+        "window_days": 90,
+        "min_score_spread": 0.08,
+        "min_ambiguity_spread": 0.08,
         "last_calibrated_at": None,
     },
 }
@@ -244,6 +247,18 @@ def _merge_policy(base: dict[str, Any], override: dict[str, Any]) -> dict[str, A
         calibration["min_samples_per_segment"] = _as_int(
             override_calibration.get("min_samples_per_segment"),
             _as_int(calibration.get("min_samples_per_segment"), 5),
+        )
+        calibration["window_days"] = _as_int(
+            override_calibration.get("window_days"),
+            _as_int(calibration.get("window_days"), 90),
+        )
+        calibration["min_score_spread"] = _as_float(
+            override_calibration.get("min_score_spread"),
+            _as_float(calibration.get("min_score_spread"), 0.08),
+        )
+        calibration["min_ambiguity_spread"] = _as_float(
+            override_calibration.get("min_ambiguity_spread"),
+            _as_float(calibration.get("min_ambiguity_spread"), 0.08),
         )
         history_file = override_calibration.get("history_file")
         if isinstance(history_file, str) and history_file.strip():

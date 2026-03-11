@@ -1,0 +1,9 @@
+{
+  "version": "1.0.0",
+  "require_stage_validation_ok": true,
+  "require_handoff_packet": true,
+  "require_contract_loaded": true,
+  "require_notes_present": true,
+  "require_artifacts_exist": true,
+  "block_on_any_missing": true
+}

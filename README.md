@@ -41,8 +41,17 @@ Saidas principais geradas para avaliacao inicial:
 - `docs/27_descoberta_guiada.md` (perguntas priorizadas e plano de discovery para propostas vagas)
 - `docs/28_validacao_pre_kickoff.md` (gate final de prontidao antes de iniciar implementacao)
 - `docs/31_politica_decisao_comercial.md` (thresholds versionados para GO/GO_COM_RESSALVAS/NO_GO)
+- `docs/32_programa_treinamento_agentes.md` (trilha oficial para formar agentes de elite)
+- `docs/33_scorecard_agentes.md` (criterios objetivos de selecao e permanencia)
 - `docs/audits/decision_policy_calibration_report.json` (calibracao por segmento com historico real)
 - `docs/01_visao.md`, `docs/02_requisitos.md`, `docs/05_arquitetura.md`, `docs/10_backlog.md`
+
+## Bloqueio por validacao de etapa
+
+- Toda etapa deve publicar `outputs.handoff_packet`.
+- Toda etapa deve fechar com `checks.stage_validation_ok=true`.
+- Sem validacao completa, o pipeline para imediatamente.
+- Policy obrigatoria em `config/stage_validation.json`.
 
 ## Checks operacionais rapidos
 

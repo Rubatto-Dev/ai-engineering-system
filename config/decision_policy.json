@@ -63,6 +63,9 @@
   "calibration": {
     "min_samples_per_segment": 5,
     "history_file": "docs/audits/proposal_decision_history.jsonl",
+    "window_days": 90,
+    "min_score_spread": 0.08,
+    "min_ambiguity_spread": 0.08,
     "last_calibrated_at": "2026-03-11T13:22:00.577668+00:00"
   },
   "source": "config"

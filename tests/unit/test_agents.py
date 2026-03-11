@@ -66,6 +66,48 @@ def test_contract_enforcement_fails_on_handoff_mismatch(tmp_path: Path) -> None:
 
 
 @pytest.mark.unit
+def test_contract_enforcement_adds_handoff_packet_and_stage_validation(tmp_path: Path) -> None:
+    agent = ScopeDefinitionAgent(repo_root=tmp_path)
+    result = AgentResult(
+        agent_id="03",
+        agent_name="Scope Definition",
+        stage="Scope Definition",
+        status="success",
+        notes="scope_defined",
+        handoff="10",
+    )
+
+    enforced = agent.enforce_contract(result)
+
+    assert enforced.status == "success"
+    assert enforced.checks["handoff_packet_ok"] is True
+    assert enforced.checks["stage_validation_ok"] is True
+    packet = enforced.outputs["handoff_packet"]
+    assert packet["from_agent_id"] == "03"
+    assert packet["to_agent_id"] == "10"
+    assert packet["summary"] == "scope_defined"
+
+
+@pytest.mark.unit
+def test_contract_enforcement_fails_when_notes_are_missing(tmp_path: Path) -> None:
+    agent = ScopeDefinitionAgent(repo_root=tmp_path)
+    result = AgentResult(
+        agent_id="03",
+        agent_name="Scope Definition",
+        stage="Scope Definition",
+        status="success",
+        notes="",
+        handoff="10",
+    )
+
+    enforced = agent.enforce_contract(result)
+
+    assert enforced.status == "failed"
+    assert enforced.checks["stage_validation_ok"] is False
+    assert "notes_present" in enforced.checks["stage_validation_missing"]
+
+
+@pytest.mark.unit
 def test_contract_enforcement_fails_when_required_section_is_missing(tmp_path: Path) -> None:
     agents_dir = tmp_path / "agents"
     agents_dir.mkdir(parents=True, exist_ok=True)

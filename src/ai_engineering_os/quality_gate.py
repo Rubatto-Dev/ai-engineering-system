@@ -33,6 +33,8 @@ def evaluate_quality_gate(
         "mcp_servers_configured": tooling["mcp_servers_ready"],
         "sonarqube_configured": tooling["sonarqube_ready"],
         "decision_policy_configured": tooling["decision_policy_ready"],
+        "stage_validation_policy_configured": tooling["stage_validation_policy_ready"],
+        "communication_protocol_configured": tooling["communication_protocol_ready"],
     }
     overall = all(checks.values())
     return {
@@ -47,12 +49,16 @@ def evaluate_tooling_setup(repo_root: Path) -> dict[str, Any]:
     policy_status = _read_tooling_policy(repo_root / "config" / "tooling.yaml")
     sonar_status = _read_sonar_properties(repo_root / "sonar-project.properties")
     decision_policy_status = _read_decision_policy_config(repo_root / "config" / "decision_policy.json")
+    stage_validation_policy_status = _read_stage_validation_policy(repo_root / "config" / "stage_validation.json")
+    communication_protocol_status = _read_communication_protocol(repo_root / "protocol" / "AGENT_COMMUNICATION_PROTOCOL.md")
 
     context7_ready = mcp_status["context7_server_ready"] and policy_status["context7_enabled"]
     sequential_ready = mcp_status["sequential_server_ready"] and policy_status["sequential_thinking_enabled"]
     mcp_servers_ready = mcp_status["context7_server_ready"] and mcp_status["sequential_server_ready"]
     sonarqube_ready = sonar_status["configured"] and policy_status["sonarqube_enabled"]
     decision_policy_ready = decision_policy_status["configured"]
+    stage_validation_policy_ready = stage_validation_policy_status["configured"]
+    communication_protocol_ready = communication_protocol_status["configured"]
 
     return {
         "context7_ready": context7_ready,
@@ -60,11 +66,15 @@ def evaluate_tooling_setup(repo_root: Path) -> dict[str, Any]:
         "mcp_servers_ready": mcp_servers_ready,
         "sonarqube_ready": sonarqube_ready,
         "decision_policy_ready": decision_policy_ready,
+        "stage_validation_policy_ready": stage_validation_policy_ready,
+        "communication_protocol_ready": communication_protocol_ready,
         "details": {
             "mcp": mcp_status,
             "tooling_policy": policy_status,
             "sonarqube": sonar_status,
             "decision_policy": decision_policy_status,
+            "stage_validation_policy": stage_validation_policy_status,
+            "communication_protocol": communication_protocol_status,
         },
     }
 
@@ -256,11 +266,100 @@ def _read_decision_policy_config(path: Path) -> dict[str, Any]:
     else:
         min_samples = calibration.get("min_samples_per_segment")
         history_file = calibration.get("history_file")
+        window_days = calibration.get("window_days")
+        min_score_spread = calibration.get("min_score_spread")
+        min_ambiguity_spread = calibration.get("min_ambiguity_spread")
         if min_samples is None:
             missing.append("calibration.min_samples_per_segment")
         if not isinstance(history_file, str) or not history_file.strip():
             missing.append("calibration.history_file")
+        if window_days is None:
+            missing.append("calibration.window_days")
+        if min_score_spread is None:
+            missing.append("calibration.min_score_spread")
+        if min_ambiguity_spread is None:
+            missing.append("calibration.min_ambiguity_spread")
 
     result["missing_keys"] = missing
     result["configured"] = not missing
+    return result
+
+
+def _read_stage_validation_policy(path: Path) -> dict[str, Any]:
+    result = {
+        "file_present": path.exists(),
+        "configured": False,
+        "missing_keys": [],
+    }
+    if not path.exists():
+        result["missing_keys"] = [
+            "version",
+            "require_stage_validation_ok",
+            "require_handoff_packet",
+            "require_contract_loaded",
+            "require_notes_present",
+            "require_artifacts_exist",
+            "block_on_any_missing",
+        ]
+        result["error"] = "stage_validation_policy_missing"
+        return result
+
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except json.JSONDecodeError:
+        result["error"] = "stage_validation_policy_json_invalid"
+        return result
+
+    if not isinstance(payload, dict):
+        result["error"] = "stage_validation_policy_invalid_shape"
+        return result
+
+    missing: list[str] = []
+    version = payload.get("version")
+    if not isinstance(version, str) or not version.strip():
+        missing.append("version")
+
+    required_flags = [
+        "require_stage_validation_ok",
+        "require_handoff_packet",
+        "require_contract_loaded",
+        "require_notes_present",
+        "require_artifacts_exist",
+        "block_on_any_missing",
+    ]
+    for key in required_flags:
+        if not isinstance(payload.get(key), bool):
+            missing.append(key)
+
+    result["missing_keys"] = missing
+    result["configured"] = not missing
+    return result
+
+
+def _read_communication_protocol(path: Path) -> dict[str, Any]:
+    result = {
+        "file_present": path.exists(),
+        "configured": False,
+        "missing_sections": [],
+        "missing_terms": [],
+    }
+    if not path.exists():
+        result["missing_sections"] = ["Communication Contract", "Handoff Rules", "Validation Snapshot"]
+        result["missing_terms"] = ["handoff_packet", "validation_snapshot"]
+        result["error"] = "communication_protocol_missing"
+        return result
+
+    content = path.read_text(encoding="utf-8-sig")
+    sections = ["Communication Contract", "Handoff Rules", "Validation Snapshot"]
+    missing_sections = [
+        section for section in sections if not re.search(rf"(?im)^##\s+{re.escape(section)}\s*$", content)
+    ]
+
+    lowered = content.lower()
+    required_terms = ["handoff_packet", "validation_snapshot", "to_agent_id"]
+    missing_terms = [term for term in required_terms if term not in lowered]
+
+    result["missing_sections"] = missing_sections
+    result["missing_terms"] = missing_terms
+    result["configured"] = not missing_sections and not missing_terms
     return result

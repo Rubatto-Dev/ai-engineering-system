@@ -104,5 +104,7 @@
   - etapa 15: endurecer tratamento de proposta vaga com discovery guiada e gate pre-kickoff
   - etapa 16: versionar thresholds comerciais de decisao e aplicar policy no Idea Validator
   - etapa 17: calibrar thresholds por segmento com historico real de decisoes
+  - etapa 18: refinar calibracao com janela temporal e regra de variancia minima por segmento
+  - etapa 19: bloquear pipeline sem validacao completa por etapa e formalizar programa de treinamento de agentes
 - Proxima etapa:
-  - etapa 18: ajustar algoritmo de calibracao com janelas temporais e minimo de variancia por segmento
+  - etapa 20: operacionalizar leaderboard automatizado para scorecard e shadow mode continuo

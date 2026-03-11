@@ -23,8 +23,12 @@ def calibrate_decision_policy(
     calibration_cfg = policy.get("calibration", {}) if isinstance(policy.get("calibration"), dict) else {}
     history_file = str(calibration_cfg.get("history_file", "docs/audits/proposal_decision_history.jsonl"))
     min_samples = max(1, _as_int(calibration_cfg.get("min_samples_per_segment"), 5))
+    window_days = max(1, _as_int(calibration_cfg.get("window_days"), 90))
+    min_score_spread = max(0.0, _as_float(calibration_cfg.get("min_score_spread"), 0.08))
+    min_ambiguity_spread = max(0.0, _as_float(calibration_cfg.get("min_ambiguity_spread"), 0.08))
     history_path = repo_root / history_file
     records = _load_history_records(history_path)
+    filtered_records = _filter_records_by_window(records, window_days)
 
     segment_reports: dict[str, Any] = {}
     segment_thresholds: dict[str, Any] = {}
@@ -32,8 +36,14 @@ def calibrate_decision_policy(
 
     for segment in PROJECT_SEGMENTS:
         current = resolve_thresholds_for_segment(policy, segment)["thresholds"]
-        segment_records = [record for record in records if str(record.get("project_segment")) == segment]
-        calibrated = _calibrate_thresholds_for_segment(current, segment_records, min_samples)
+        segment_records = [record for record in filtered_records if str(record.get("project_segment")) == segment]
+        calibrated = _calibrate_thresholds_for_segment(
+            current,
+            segment_records,
+            min_samples,
+            min_score_spread=min_score_spread,
+            min_ambiguity_spread=min_ambiguity_spread,
+        )
         used_any_history = used_any_history or bool(calibrated["used_history"])
         segment_reports[segment] = {
             "samples": len(segment_records),
@@ -59,7 +69,11 @@ def calibrate_decision_policy(
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "history_file": history_file,
         "history_records": len(records),
+        "history_records_in_window": len(filtered_records),
+        "window_days": window_days,
         "min_samples_per_segment": min_samples,
+        "min_score_spread": min_score_spread,
+        "min_ambiguity_spread": min_ambiguity_spread,
         "policy_version_before": current_version,
         "policy_version_recommended": recommended_version,
         "used_any_history": used_any_history,
@@ -86,6 +100,12 @@ def _build_recommended_policy(
         calibration["min_samples_per_segment"] = 5
     if "history_file" not in calibration:
         calibration["history_file"] = "docs/audits/proposal_decision_history.jsonl"
+    if "window_days" not in calibration:
+        calibration["window_days"] = 90
+    if "min_score_spread" not in calibration:
+        calibration["min_score_spread"] = 0.08
+    if "min_ambiguity_spread" not in calibration:
+        calibration["min_ambiguity_spread"] = 0.08
     recommended["calibration"] = calibration
     return recommended
 
@@ -94,6 +114,9 @@ def _calibrate_thresholds_for_segment(
     current_thresholds: dict[str, Any],
     records: list[dict[str, Any]],
     min_samples: int,
+    *,
+    min_score_spread: float,
+    min_ambiguity_spread: float,
 ) -> dict[str, Any]:
     normalized_current = _normalize_thresholds(current_thresholds)
     if len(records) < min_samples:
@@ -106,6 +129,15 @@ def _calibrate_thresholds_for_segment(
     scores = sorted(_as_float(record.get("score"), 0.0) for record in records)
     ambiguities = sorted(_as_float(record.get("ambiguity_score"), 0.55) for record in records)
     open_gaps = sorted(max(0, _as_int(record.get("open_gaps"), 0)) for record in records)
+    score_spread = (scores[-1] - scores[0]) if scores else 0.0
+    ambiguity_spread = (ambiguities[-1] - ambiguities[0]) if ambiguities else 0.0
+
+    if score_spread < min_score_spread or ambiguity_spread < min_ambiguity_spread:
+        return {
+            "thresholds": normalized_current,
+            "used_history": False,
+            "reason": "insufficient_variance",
+        }
 
     current_go = _as_float(normalized_current["go_min_score"], 0.78)
     current_caveats = _as_float(normalized_current["go_with_caveats_min_score"], 0.52)
@@ -170,6 +202,36 @@ def _calibrate_thresholds_for_segment(
         "used_history": True,
         "reason": "calibrated_from_history",
     }
+
+
+def _filter_records_by_window(records: list[dict[str, Any]], window_days: int) -> list[dict[str, Any]]:
+    if window_days <= 0:
+        return list(records)
+    now = datetime.now(timezone.utc)
+    filtered: list[dict[str, Any]] = []
+    for record in records:
+        timestamp = _parse_iso_timestamp(record.get("timestamp_utc"))
+        if timestamp is None:
+            continue
+        age_days = (now - timestamp).total_seconds() / 86400.0
+        if age_days <= float(window_days):
+            filtered.append(record)
+    return filtered
+
+
+def _parse_iso_timestamp(raw: Any) -> datetime | None:
+    if not isinstance(raw, str) or not raw.strip():
+        return None
+    text = raw.strip()
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
 
 
 def _load_history_records(path: Path) -> list[dict[str, Any]]:

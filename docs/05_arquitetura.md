@@ -27,8 +27,9 @@ Arquitetura em camadas com protocolo Jarvis como ponto de entrada, orquestracao 
 2. Parser valida comando e argumentos obrigatorios.
 3. `JarvisEngine` roteia para acao correspondente.
 4. `EXEC` dispara pipeline com equipe de agentes e coleta de artefatos.
-5. `AUDIT` aplica quality gate e, opcionalmente, runtime externo estrito.
-6. `SHIP` somente libera quando auditoria da ultima execucao esta valida.
+5. Cada agente passa por `enforce_contract`, publica `handoff_packet` e so avanca com `stage_validation_ok=true`.
+6. `AUDIT` aplica quality gate e, opcionalmente, runtime externo estrito.
+7. `SHIP` somente libera quando auditoria da ultima execucao esta valida.
 
 ## Integracoes
 

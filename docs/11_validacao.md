@@ -307,3 +307,45 @@
   - `npm run quality:python` -> `ok: true`
   - `npm.cmd run runtime:check` -> `ok: true`
   - `npm.cmd run audit:safety` -> `ok: true`
+
+### Etapa 18 - Calibracao temporal com regra de estabilidade
+
+- Mudanca:
+  - `src/ai_engineering_os/decision_calibration.py` reforcado com:
+    - `window_days` para calibrar apenas historico recente.
+    - `min_score_spread` e `min_ambiguity_spread` para evitar ajuste com baixa variancia.
+  - `src/ai_engineering_os/decision_policy.py`, `repository.py` e `quality_gate.py` atualizados para novas chaves de calibracao.
+  - `config/decision_policy.json` atualizado com os novos parametros.
+- Cobertura adicionada:
+  - `tests/unit/test_decision_calibration.py`
+    - ignora historico fora da janela
+    - bloqueia calibracao por variancia insuficiente
+- Validacao da etapa:
+  - `npm run test:python` -> `47 passed`
+  - `npm run quality:python` -> `ok: true`
+  - `npm.cmd run runtime:check` -> `ok: true`
+  - `npm.cmd run audit:safety` -> `ok: true`
+
+### Etapa 19 - Stage validation bloqueante e comunicacao sem brecha
+
+- Mudanca:
+  - `BaseAgent.enforce_contract` agora exige:
+    - `handoff_packet` obrigatorio em `outputs`
+    - checklist `stage_validation_ok` com bloqueio automatico quando houver falha
+  - `quality_gate` reforcado com:
+    - `stage_validation_policy_configured`
+    - `communication_protocol_configured`
+  - nova policy: `config/stage_validation.json`
+  - protocolos atualizados:
+    - `protocol/AGENT_COMMUNICATION_PROTOCOL.md`
+    - `protocol/VALIDATION_RULES.md`
+  - programa de treino formalizado:
+    - `docs/32_programa_treinamento_agentes.md`
+    - `docs/33_scorecard_agentes.md`
+- Cobertura adicionada:
+  - `tests/unit/test_agents.py` (handoff packet + bloqueio por notes ausentes)
+  - `tests/unit/test_quality_gate.py` (falha sem policy de stage validation e sem protocolo)
+  - `tests/integration/test_pipeline_integration.py` (assert de `stage_validation_ok` e `handoff_packet_ok`)
+- Validacao da etapa:
+  - `npm run test:python` -> `51 passed`
+  - `npm run quality:python` -> `ok: true`

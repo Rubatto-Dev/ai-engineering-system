@@ -21,6 +21,7 @@ Formato de entrada:
 - `POST /jarvis/exec`
   - request: `{ "cycle": 1, "mode": "autopilot_safe" }`
   - response principal: `{ "status": "success|failed", "stages": [...], "artifacts": [...] }`
+  - cada `stage` inclui checks de contrato, `handoff_packet_ok` e `stage_validation_ok`
 - `POST /jarvis/audit`
   - request: `{ "repo": "alpha", "strict_external": true }`
   - response principal: `{ "status": "audit_ok|audit_failed", "result": { "checks": {...} } }`
@@ -41,3 +42,4 @@ Formato de entrada:
 - `SHIP` bloqueia sem `EXEC` previo.
 - `SHIP` bloqueia sem `AUDIT` da ultima execucao.
 - `SHIP` bloqueia se quality gate mudar para fail apos auditoria.
+- `EXEC` bloqueia no primeiro stage com `stage_validation_ok=false`.

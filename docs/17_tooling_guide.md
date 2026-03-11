@@ -63,5 +63,17 @@
   - `docs/27_descoberta_guiada.md`
   - `docs/28_validacao_pre_kickoff.md`
   - `docs/31_politica_decisao_comercial.md`
+  - `docs/32_programa_treinamento_agentes.md`
+  - `docs/33_scorecard_agentes.md`
   - `docs/audits/proposal_decision_history.jsonl`
   - `docs/audits/decision_policy_calibration_report.json`
+
+## Stage Validation Policy
+
+- Policy file: `config/stage_validation.json`
+- Gate behavior:
+  - stage only passes with `stage_validation_ok=true`
+  - mandatory `handoff_packet` in every stage output
+  - missing contract/notes/artifacts blocks pipeline
+- Validate policy and protocol with:
+  - `npm run quality:python`

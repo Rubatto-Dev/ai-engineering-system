@@ -24,6 +24,8 @@ REQUIRED_DOCS = [
     "27_descoberta_guiada.md",
     "28_validacao_pre_kickoff.md",
     "31_politica_decisao_comercial.md",
+    "32_programa_treinamento_agentes.md",
+    "33_scorecard_agentes.md",
 ]
 
 
@@ -165,8 +167,30 @@ def ensure_structure(repo_root: Path) -> None:
                     "calibration": {
                         "min_samples_per_segment": 5,
                         "history_file": "docs/audits/proposal_decision_history.jsonl",
+                        "window_days": 90,
+                        "min_score_spread": 0.08,
+                        "min_ambiguity_spread": 0.08,
                         "last_calibrated_at": None,
                     },
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+    stage_validation_policy_path = repo_root / "config" / "stage_validation.json"
+    if not stage_validation_policy_path.exists():
+        stage_validation_policy_path.write_text(
+            json.dumps(
+                {
+                    "version": "1.0.0",
+                    "require_stage_validation_ok": True,
+                    "require_handoff_packet": True,
+                    "require_contract_loaded": True,
+                    "require_notes_present": True,
+                    "require_artifacts_exist": True,
+                    "block_on_any_missing": True,
                 },
                 indent=2,
             )
@@ -182,6 +206,48 @@ def ensure_structure(repo_root: Path) -> None:
                     "sonar.projectKey=ai-engineering-system",
                     "sonar.sources=src",
                     "sonar.tests=tests",
+                ]
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+    communication_protocol_path = repo_root / "protocol" / "AGENT_COMMUNICATION_PROTOCOL.md"
+    if not communication_protocol_path.exists():
+        communication_protocol_path.write_text(
+            "\n".join(
+                [
+                    "# Agent Communication Protocol",
+                    "",
+                    "## Communication Contract",
+                    "- Every stage must publish a handoff_packet.",
+                    "- handoff_packet includes summary, assumptions, risks, open_questions and validation_snapshot.",
+                    "",
+                    "## Handoff Rules",
+                    "- to_agent_id must match contract handoff.",
+                    "- Last stage uses empty to_agent_id.",
+                    "",
+                    "## Validation Snapshot",
+                    "- handoff_packet.validation_snapshot is mandatory and audit-ready.",
+                ]
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+    validation_rules_path = repo_root / "protocol" / "VALIDATION_RULES.md"
+    if not validation_rules_path.exists():
+        validation_rules_path.write_text(
+            "\n".join(
+                [
+                    "# Validation Rules",
+                    "",
+                    "## Stage Gate",
+                    "- Every stage must return stage_validation_ok=true before the next stage runs.",
+                    "- Missing contract, missing notes, invalid handoff_packet or missing artifacts block the pipeline.",
+                    "",
+                    "## Ship Gate",
+                    "- SHIP requires all technical checks and stage validation checks green.",
                 ]
             )
             + "\n",

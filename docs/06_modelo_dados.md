@@ -19,6 +19,8 @@
 - `checks` (map)
 - `handoff` (string)
 - `notes` (string)
+- `stage_validation_ok` (bool)
+- `handoff_packet` (map)
 
 ### artifact
 - `project_name` (string)

@@ -41,6 +41,8 @@ def test_pipeline_executes_all_agents_with_traceability(tmp_path: Path) -> None:
     assert all(trace["checks"].get("result_schema_ok") is True for trace in traces)
     assert all("contract_loaded" in trace["checks"] for trace in traces)
     assert all(trace["checks"].get("contract_handoff_match") is True for trace in traces)
+    assert all(trace["checks"].get("handoff_packet_ok") is True for trace in traces)
+    assert all(trace["checks"].get("stage_validation_ok") is True for trace in traces)
 
 
 @pytest.mark.integration
