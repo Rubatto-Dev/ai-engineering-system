@@ -27,6 +27,7 @@ Sistema de engenharia assistida por IA orientado por agentes, com protocolo Jarv
 3. Planejar e executar:
    - `JARVIS: PLAN cycle=1`
    - `JARVIS: EXEC cycle=1 mode=autopilot_safe`
+   - opcional (one-shot): `python scripts/run_pipeline.py --project acme --cycle 1 --mode autopilot_safe --proposal-file proposals/cliente_acme.md --strict-external`
 4. Validar:
    - `npm run test:python`
    - `npm run quality:python`

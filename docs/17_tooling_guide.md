@@ -52,5 +52,7 @@
   - `JARVIS: START project=<name> proposal_file=proposals/cliente_x.md`
 - Run execution cycle to produce proposal assessment:
   - `JARVIS: EXEC cycle=1 mode=autopilot_safe`
+- Optional one-shot pipeline command:
+  - `python scripts/run_pipeline.py --project <name> --cycle 1 --mode autopilot_safe --proposal-file proposals/cliente_x.md --strict-external`
 - Core output:
   - `docs/26_proposta_avaliacao.md`

@@ -4,8 +4,14 @@ from pathlib import Path
 
 import pytest
 
-from ai_engineering_os.agents import BacklogAgent, IdeaValidatorAgent, ScopeDefinitionAgent, build_agent_team
-from ai_engineering_os.models import AgentResult
+from ai_engineering_os.agents import (
+    BacklogAgent,
+    IdeaValidatorAgent,
+    ProjectManagerAgent,
+    ScopeDefinitionAgent,
+    build_agent_team,
+)
+from ai_engineering_os.models import AgentResult, ProjectContext
 
 
 @pytest.mark.unit
@@ -134,3 +140,31 @@ def test_contract_enforcement_fails_on_agent_id_mismatch(tmp_path: Path) -> None
     assert enforced.status == "failed"
     assert enforced.checks["result_schema_ok"] is False
     assert "agent_id_mismatch_expected_03" in enforced.checks["result_schema_errors"]
+
+
+@pytest.mark.unit
+def test_project_manager_uses_proposal_profile_for_roadmap_timeline(tmp_path: Path) -> None:
+    agent = ProjectManagerAgent(repo_root=tmp_path)
+    context = ProjectContext(project="delta", cycle=1, mode="autopilot_safe")
+
+    result = agent.run(
+        context,
+        {
+            "proposal_profile": {
+                "project_type": "backend",
+                "estimated_duration_weeks": {"min": 5, "avg": 8, "max": 12},
+            }
+        },
+    )
+
+    assert result.status == "success"
+    milestones = result.outputs.get("roadmap_milestones", [])
+    assert isinstance(milestones, list)
+    assert milestones
+    assert "backend track" in milestones[0]
+
+    roadmap_path = tmp_path / "docs" / "12_roadmap.md"
+    assert roadmap_path.exists()
+    content = roadmap_path.read_text(encoding="utf-8")
+    assert "## Timeline" in content
+    assert "estimated_duration_weeks: 5-12 (avg 8)" in content

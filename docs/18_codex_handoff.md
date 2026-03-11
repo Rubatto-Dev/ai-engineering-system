@@ -79,6 +79,28 @@
 - Novos artefatos de suporte:
   - `docs/26_proposta_avaliacao.md`
   - `docs/30_template_proposta_cliente.md`
+  - `proposals/cliente_piloto.md`
+
+## Atualizacao Fase 3 - Etapa 14 (2026-03-11)
+
+- Validacao ponta a ponta executada com proposta piloto em workspace isolado.
+- Resultado da proposta piloto:
+  - decisao: `GO_COM_RESSALVAS`
+  - tipo inferido: `hibrido`
+  - viabilidade: `media`
+  - duracao estimada: `9-16` semanas (media `12`)
+  - valor estimado: `0.71`
+- Ajustes de produto concluídos:
+  - `ProjectManagerAgent` agora escreve timeline de roadmap a partir do `proposal_profile`.
+  - `scripts/run_pipeline.py` suporta `--proposal-file` e `--strict-external`.
+  - cobertura unitária adicionada para roadmap orientado por proposta.
+- Gates tecnicos revalidados:
+  - `test:python` -> `35 passed`
+  - `quality:python` -> `ok: true`
+  - `runtime:check` -> `ok: true`
+  - `audit:safety` -> `ok: true`
+- Proxima etapa recomendada:
+  - formalizar criterios comerciais de decisao (`GO`, `GO_COM_RESSALVAS`, `NO_GO`) com thresholds versionados.
 
 ## Como retomar rapido no Codex
 

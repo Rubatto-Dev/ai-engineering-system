@@ -19,3 +19,9 @@ Gerado e atualizado automaticamente pelo pipeline.
 - Avaliacao automatizada de valor, viabilidade, duracao e stack recomendada
 - Geracao de documentacao base para tomada de decisao pre-execucao
 - Suite de testes expandida para cobrir cenario de proposta (34 testes)
+
+## Release 0.3.2 - 2026-03-11
+- Roadmap do PM calibrado por proposta com timeline estimada em `docs/12_roadmap.md`
+- Runner operacional `scripts/run_pipeline.py` com `--proposal-file` e `--strict-external`
+- Validacao piloto ponta a ponta para proposta de cliente (decisao `GO_COM_RESSALVAS`)
+- Suite de testes expandida para 35 testes

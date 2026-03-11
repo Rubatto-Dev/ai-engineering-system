@@ -216,3 +216,27 @@
   - `npm run quality:python` -> `ok: true`
   - `npm run runtime:check` -> `ok: true`
   - `npm run audit:safety` -> `ok: true`
+
+### Etapa 14 - Validacao de proposta piloto e calibracao de roadmap
+
+- Mudanca:
+  - `src/ai_engineering_os/agents/pm.py` passou a usar `proposal_profile` para milestone inicial de discovery e timeline no roadmap.
+  - `tests/unit/test_agents.py` ganhou cobertura para comportamento de roadmap orientado por proposta.
+  - `scripts/run_pipeline.py` passou a aceitar `--proposal-file` e `--strict-external` para execucao operacional do fluxo de proposta.
+- Validacao de ponta a ponta (workspace temporario):
+  - proposta piloto com objetivo, features, prazo, budget, KPI e requisito de seguranca.
+  - `START` com proposta carregada: `proposal_loaded=true`.
+  - perfil inferido:
+    - `project_type: hibrido`
+    - `feasibility: media`
+    - `estimated_duration_weeks: 9-16 (avg 12)`
+    - `value_score: 0.71`
+  - artefatos confirmados:
+    - `docs/26_proposta_avaliacao.md`
+    - `docs/12_roadmap.md` com `## Timeline`.
+  - decisao gerada: `GO_COM_RESSALVAS`.
+- Validacao da etapa:
+  - `npm run test:python` -> `35 passed`
+  - `npm run quality:python` -> `ok: true`
+  - `npm.cmd run runtime:check` -> `ok: true`
+  - `npm.cmd run audit:safety` -> `ok: true`
