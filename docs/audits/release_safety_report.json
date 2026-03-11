@@ -1,0 +1,267 @@
+{
+  "generated_at": "2026-03-11T11:52:41.019833+00:00",
+  "repo_root": "C:\\Users\\Guilherme - Hogar\\Desktop\\agents\\ai-engineering-system",
+  "ok": true,
+  "checks": {
+    "tests_ok": true,
+    "quality_ok": true,
+    "runtime_ok": true,
+    "strict_audit_ok": true
+  },
+  "details": {
+    "tests": {
+      "ok": true,
+      "command": [
+        "C:\\Users\\Guilherme - Hogar\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout_tail": "............................                                             [100%]",
+      "stderr_tail": ""
+    },
+    "quality": {
+      "ok": true,
+      "checks": {
+        "tests_ok": true,
+        "docs_updated": true,
+        "security_checks_ok": true,
+        "quality_gate_ok": true,
+        "adr_updated": true,
+        "context7_configured": true,
+        "sequential_thinking_configured": true,
+        "mcp_servers_configured": true,
+        "sonarqube_configured": true
+      },
+      "tooling": {
+        "mcp": {
+          "file_present": true,
+          "json_valid": true,
+          "context7_server_ready": true,
+          "sequential_server_ready": true
+        },
+        "tooling_policy": {
+          "file_present": true,
+          "context7_enabled": true,
+          "sequential_thinking_enabled": true,
+          "sonarqube_enabled": true
+        },
+        "sonarqube": {
+          "file_present": true,
+          "configured": true,
+          "missing_keys": []
+        }
+      }
+    },
+    "runtime": {
+      "ok": true,
+      "checks": {
+        "node_available": true,
+        "npm_available": true,
+        "context7_runtime_ready": true,
+        "sequential_thinking_runtime_ready": true,
+        "sonar_api_reachable": true
+      },
+      "details": {
+        "node": {
+          "ok": true,
+          "command": [
+            "node",
+            "--version"
+          ],
+          "mode": "exited",
+          "exit_code": 0,
+          "stdout": "v24.14.0\n",
+          "stderr": ""
+        },
+        "npm": {
+          "ok": true,
+          "command": [
+            "npm.cmd",
+            "--version"
+          ],
+          "mode": "exited",
+          "exit_code": 0,
+          "stdout": "11.11.0\n",
+          "stderr": ""
+        },
+        "mcp_config": {
+          "mcpServers": {
+            "context7": {
+              "command": "npx",
+              "args": [
+                "@upstash/context7-mcp"
+              ]
+            },
+            "sequential-thinking": {
+              "command": "npx",
+              "args": [
+                "@modelcontextprotocol/server-sequential-thinking"
+              ]
+            },
+            "github": {
+              "command": "mcp-server-github",
+              "args": []
+            }
+          }
+        },
+        "context7": {
+          "ok": true,
+          "command": [
+            "npx.cmd",
+            "@upstash/context7-mcp"
+          ],
+          "mode": "running_after_timeout",
+          "exit_code": null,
+          "stdout": "",
+          "stderr": ""
+        },
+        "sequential_thinking": {
+          "ok": true,
+          "command": [
+            "npx.cmd",
+            "@modelcontextprotocol/server-sequential-thinking"
+          ],
+          "mode": "running_after_timeout",
+          "exit_code": null,
+          "stdout": "",
+          "stderr": ""
+        },
+        "sonarqube": {
+          "ok": true,
+          "status_code": 200,
+          "url": "http://localhost:9000/api/system/status",
+          "system_status": "UP",
+          "body_snippet": "{\"id\":\"147B411E-AZzD5U1Z0jqYvlKIg2Kv\",\"version\":\"26.3.0.120487\",\"status\":\"UP\"}"
+        }
+      }
+    },
+    "strict_audit": {
+      "status": "audit_ok",
+      "result": {
+        "ok": true,
+        "checks": {
+          "tests_ok": true,
+          "docs_updated": true,
+          "security_checks_ok": true,
+          "quality_gate_ok": true,
+          "adr_updated": true,
+          "context7_configured": true,
+          "sequential_thinking_configured": true,
+          "mcp_servers_configured": true,
+          "sonarqube_configured": true,
+          "external_runtime_ok": true
+        },
+        "tooling": {
+          "mcp": {
+            "file_present": true,
+            "json_valid": true,
+            "context7_server_ready": true,
+            "sequential_server_ready": true
+          },
+          "tooling_policy": {
+            "file_present": true,
+            "context7_enabled": true,
+            "sequential_thinking_enabled": true,
+            "sonarqube_enabled": true
+          },
+          "sonarqube": {
+            "file_present": true,
+            "configured": true,
+            "missing_keys": []
+          }
+        }
+      },
+      "inputs": {
+        "tests_ok": true,
+        "security_ok": true,
+        "sonar_ok": true,
+        "strict_external": true
+      },
+      "external_runtime": {
+        "ok": true,
+        "checks": {
+          "node_available": true,
+          "npm_available": true,
+          "context7_runtime_ready": true,
+          "sequential_thinking_runtime_ready": true,
+          "sonar_api_reachable": true
+        },
+        "details": {
+          "node": {
+            "ok": true,
+            "command": [
+              "node",
+              "--version"
+            ],
+            "mode": "exited",
+            "exit_code": 0,
+            "stdout": "v24.14.0\n",
+            "stderr": ""
+          },
+          "npm": {
+            "ok": true,
+            "command": [
+              "npm.cmd",
+              "--version"
+            ],
+            "mode": "exited",
+            "exit_code": 0,
+            "stdout": "11.11.0\n",
+            "stderr": ""
+          },
+          "mcp_config": {
+            "mcpServers": {
+              "context7": {
+                "command": "npx",
+                "args": [
+                  "@upstash/context7-mcp"
+                ]
+              },
+              "sequential-thinking": {
+                "command": "npx",
+                "args": [
+                  "@modelcontextprotocol/server-sequential-thinking"
+                ]
+              },
+              "github": {
+                "command": "mcp-server-github",
+                "args": []
+              }
+            }
+          },
+          "context7": {
+            "ok": true,
+            "command": [
+              "npx.cmd",
+              "@upstash/context7-mcp"
+            ],
+            "mode": "running_after_timeout",
+            "exit_code": null,
+            "stdout": "",
+            "stderr": ""
+          },
+          "sequential_thinking": {
+            "ok": true,
+            "command": [
+              "npx.cmd",
+              "@modelcontextprotocol/server-sequential-thinking"
+            ],
+            "mode": "exited",
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": "Sequential Thinking MCP Server running on stdio\n"
+          },
+          "sonarqube": {
+            "ok": true,
+            "status_code": 200,
+            "url": "http://localhost:9000/api/system/status",
+            "system_status": "UP",
+            "body_snippet": "{\"id\":\"147B411E-AZzD5U1Z0jqYvlKIg2Kv\",\"version\":\"26.3.0.120487\",\"status\":\"UP\"}"
+          }
+        }
+      }
+    }
+  }
+}

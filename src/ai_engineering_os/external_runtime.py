@@ -93,6 +93,9 @@ def _probe_sonar_api() -> dict[str, Any]:
         return {"ok": False, "url": url, "error": str(exc)}
     except TimeoutError:
         return {"ok": False, "url": url, "error": "timeout"}
+    except Exception as exc:  # pragma: no cover - defensive path for transient HTTP stack failures
+        message = str(exc).strip() or exc.__class__.__name__
+        return {"ok": False, "url": url, "error": message}
 
 
 def _probe_command(command: list[str], cwd: Path, timeout: float) -> dict[str, Any]:

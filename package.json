@@ -15,6 +15,7 @@
     "test:python": "scripts\\run_pytest.cmd",
     "quality:python": "scripts\\run_quality.cmd",
     "runtime:check": "scripts\\run_runtime_check.cmd",
+    "audit:safety": "scripts\\run_release_safety_audit.cmd",
     "sonar:up": "scripts\\start_sonarqube.cmd",
     "sonar:down": "scripts\\stop_sonarqube.cmd"
   },

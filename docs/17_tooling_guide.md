@@ -38,3 +38,9 @@
 
 - Run `JARVIS: AUDIT repo=<name> strict_external=true`.
 - With `strict_external=true`, audit requires runtime readiness in addition to quality/document checks.
+
+## Release Safety Audit
+
+- Run `npm run audit:safety` to execute a consolidated release-safety audit.
+- The command generates `docs/audits/release_safety_report.json`.
+- Release candidate is ready only when report field `ok` is `true`.

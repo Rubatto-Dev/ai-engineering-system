@@ -98,3 +98,39 @@ def test_contract_enforcement_fails_when_required_section_is_missing(tmp_path: P
     assert enforced.status == "failed"
     assert enforced.checks["contract_required_sections_ok"] is False
     assert "Handoff" in enforced.checks["contract_missing_sections"]
+
+
+@pytest.mark.unit
+def test_contract_enforcement_fails_on_invalid_handoff_format(tmp_path: Path) -> None:
+    agent = ScopeDefinitionAgent(repo_root=tmp_path)
+    result = AgentResult(
+        agent_id="03",
+        agent_name="Scope Definition",
+        stage="Scope Definition",
+        status="success",
+        handoff="next-agent",
+    )
+
+    enforced = agent.enforce_contract(result)
+
+    assert enforced.status == "failed"
+    assert enforced.checks["result_schema_ok"] is False
+    assert "handoff_invalid_format" in enforced.checks["result_schema_errors"]
+
+
+@pytest.mark.unit
+def test_contract_enforcement_fails_on_agent_id_mismatch(tmp_path: Path) -> None:
+    agent = ScopeDefinitionAgent(repo_root=tmp_path)
+    result = AgentResult(
+        agent_id="99",
+        agent_name="Scope Definition",
+        stage="Scope Definition",
+        status="success",
+        handoff="10",
+    )
+
+    enforced = agent.enforce_contract(result)
+
+    assert enforced.status == "failed"
+    assert enforced.checks["result_schema_ok"] is False
+    assert "agent_id_mismatch_expected_03" in enforced.checks["result_schema_errors"]

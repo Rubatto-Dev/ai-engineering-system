@@ -86,6 +86,15 @@ class BaseAgent:
         raise NotImplementedError
 
     def enforce_contract(self, result: AgentResult) -> AgentResult:
+        schema_errors = self._validate_result_shape(result)
+        result.checks["result_schema_ok"] = not schema_errors
+        result.checks["result_schema_errors"] = schema_errors
+        if schema_errors:
+            result.status = "failed"
+            error_text = ",".join(schema_errors)
+            issue = f"result_schema_invalid={error_text}"
+            result.notes = f"{result.notes}; {issue}" if result.notes else issue
+
         contract = self._load_contract()
         if not contract:
             result.checks.setdefault("contract_loaded", False)
@@ -124,6 +133,41 @@ class BaseAgent:
             result.status = "failed"
             result.notes = f"{result.notes}; {mismatch}" if result.notes else mismatch
         return result
+
+    def _validate_result_shape(self, result: AgentResult) -> list[str]:
+        errors: list[str] = []
+
+        if not isinstance(result.agent_id, str) or not result.agent_id.strip():
+            errors.append("agent_id_missing")
+        elif result.agent_id != self.agent_id:
+            errors.append(f"agent_id_mismatch_expected_{self.agent_id}")
+
+        if not isinstance(result.agent_name, str) or not result.agent_name.strip():
+            errors.append("agent_name_missing")
+
+        if not isinstance(result.stage, str) or not result.stage.strip():
+            errors.append("stage_missing")
+
+        if not isinstance(result.status, str) or not result.status.strip():
+            errors.append("status_missing")
+
+        if not isinstance(result.outputs, dict):
+            errors.append("outputs_not_dict")
+
+        if not isinstance(result.checks, dict):
+            errors.append("checks_not_dict")
+
+        if not isinstance(result.artifacts, list):
+            errors.append("artifacts_not_list")
+        elif any(not isinstance(item, str) for item in result.artifacts):
+            errors.append("artifacts_non_string_item")
+
+        if not isinstance(result.handoff, str):
+            errors.append("handoff_not_string")
+        elif result.handoff and not re.fullmatch(r"\d{2}", result.handoff):
+            errors.append("handoff_invalid_format")
+
+        return errors
 
     def _load_contract(self) -> tuple[Path, str] | None:
         pattern = f"{self.agent_id}_*.agent.md"
