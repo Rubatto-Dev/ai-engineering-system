@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import logging
 from typing import Any
@@ -20,7 +20,7 @@ class CtoAgent(BaseAgent):
         stack = proposal_profile.get("recommended_stack", ["Python 3.11", "Pytest", "SonarQube", "MCP adapters"])
         if not isinstance(stack, list) or not stack:
             stack = ["Python 3.11", "Pytest", "SonarQube", "MCP adapters", "Structured docs"]
-        project_type = str(proposal_profile.get("project_type", "hibrido"))
+        project_type = str(proposal_profile.get("project_type", "fullstack"))
         feasibility = str(proposal_profile.get("feasibility", "media"))
         adr1 = self._write(
             "docs/decisions/ADR-0001.md",

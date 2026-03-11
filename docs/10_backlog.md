@@ -104,4 +104,4 @@
   - etapa 15: endurecer tratamento de proposta vaga com discovery guiada e gate pre-kickoff
   - etapa 16: versionar thresholds comerciais de decisao e aplicar policy no Idea Validator
 - Proxima etapa:
-  - etapa 17: calibrar thresholds por segmento (frontend/backend/automacao/hibrido) com dados reais
+  - etapa 17: calibrar thresholds por segmento (frontend/backend/automacao/fullstack) com dados reais

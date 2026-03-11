@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import logging
 from typing import Any
@@ -19,7 +19,7 @@ class IntakeScenarioAgent(BaseAgent):
             "frontend": "experiencia de interface, responsividade e conversao",
             "backend": "contratos de API, seguranca e confiabilidade de servicos",
             "automacao": "idempotencia, observabilidade e tolerancia a falhas",
-            "hibrido": "integracao entre camadas com entrega incremental",
+            "fullstack": "integracao entre camadas com entrega incremental",
         }.get(project_type, "integracao entre camadas com entrega incremental")
         return [
             {
@@ -39,7 +39,7 @@ class IntakeScenarioAgent(BaseAgent):
     def run(self, context: ProjectContext, state: dict[str, Any]) -> AgentResult:
         logger.info("Running Intake for project=%s", context.project)
         proposal_profile = state.get("proposal_profile", {})
-        project_type = str(proposal_profile.get("project_type", "hibrido"))
+        project_type = str(proposal_profile.get("project_type", "fullstack"))
         ambiguity_level = str(proposal_profile.get("ambiguity_level", "media"))
         ambiguity_score = float(proposal_profile.get("ambiguity_score", 0.55))
         scenarios = self.design(context.project, project_type)

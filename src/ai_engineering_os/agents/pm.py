@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import logging
 from typing import Any
@@ -18,7 +18,7 @@ class ProjectManagerAgent(BaseAgent):
         logger.info("Running Project Manager for project=%s", context.project)
         proposal_profile = state.get("proposal_profile", {})
         duration = proposal_profile.get("estimated_duration_weeks", {"avg": 6})
-        project_type = str(proposal_profile.get("project_type", "hibrido"))
+        project_type = str(proposal_profile.get("project_type", "fullstack"))
         milestones = self.sequential.decompose(
             f"Roadmap for {context.project}",
             [

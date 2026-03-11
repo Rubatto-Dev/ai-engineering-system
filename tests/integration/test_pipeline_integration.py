@@ -81,7 +81,7 @@ def test_pipeline_with_proposal_profile_generates_assessment_doc(tmp_path: Path)
     pipeline = EngineeringPipeline(tmp_path)
     profile = {
         "proposal_present": True,
-        "project_type": "hibrido",
+        "project_type": "fullstack",
         "estimated_duration_weeks": {"min": 4, "avg": 7, "max": 10},
         "key_features": ["Client proposal intake", "Feasibility scoring", "Professional documentation output"],
         "recommended_stack": ["Python 3.11", "FastAPI", "React", "PostgreSQL"],

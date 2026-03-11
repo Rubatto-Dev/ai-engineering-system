@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import logging
 from typing import Any
@@ -18,7 +18,7 @@ class ScopeDefinitionAgent(BaseAgent):
         logger.info("Running Scope Definition for project=%s", context.project)
         reqs = state.get("functional_requirements", [])
         proposal_profile = state.get("proposal_profile", {})
-        project_type = str(proposal_profile.get("project_type", "hibrido"))
+        project_type = str(proposal_profile.get("project_type", "fullstack"))
         value_hypothesis = str(
             proposal_profile.get(
                 "value_hypothesis",

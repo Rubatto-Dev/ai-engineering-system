@@ -86,7 +86,7 @@
 - Validacao ponta a ponta executada com proposta piloto em workspace isolado.
 - Resultado da proposta piloto:
   - decisao: `GO_COM_RESSALVAS`
-  - tipo inferido: `hibrido`
+  - tipo inferido: `fullstack`
   - viabilidade: `media`
   - duracao estimada: `9-16` semanas (media `12`)
   - valor estimado: `0.71`

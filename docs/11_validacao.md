@@ -227,7 +227,7 @@
   - proposta piloto com objetivo, features, prazo, budget, KPI e requisito de seguranca.
   - `START` com proposta carregada: `proposal_loaded=true`.
   - perfil inferido:
-    - `project_type: hibrido`
+    - `project_type: fullstack`
     - `feasibility: media`
     - `estimated_duration_weeks: 9-16 (avg 12)`
     - `value_score: 0.71`

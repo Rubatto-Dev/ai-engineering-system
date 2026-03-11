@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import logging
 from typing import Any
@@ -20,7 +20,7 @@ class RequirementsEngineerAgent(BaseAgent):
         key_features = proposal_profile.get("key_features", [])
         missing_info = proposal_profile.get("missing_information", [])
         duration = proposal_profile.get("estimated_duration_weeks", {"avg": 6})
-        project_type = str(proposal_profile.get("project_type", "hibrido"))
+        project_type = str(proposal_profile.get("project_type", "fullstack"))
 
         if isinstance(key_features, list) and key_features:
             functional = [f"Implementar feature prioritaria: {feature}" for feature in key_features[:5]]

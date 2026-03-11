@@ -39,6 +39,12 @@ _TYPE_KEYWORDS = {
         "whatsapp",
         "cron",
     ],
+    "fullstack": [
+        "fullstack",
+        "full-stack",
+        "end-to-end",
+        "ponta a ponta",
+    ],
 }
 
 _KNOWN_INTEGRATIONS = [
@@ -75,7 +81,7 @@ _STACK_BY_TYPE = {
     "frontend": ["TypeScript", "React", "Next.js", "Playwright", "Tailwind CSS"],
     "backend": ["Python 3.11", "FastAPI", "PostgreSQL", "Pytest", "Docker"],
     "automacao": ["Python 3.11", "n8n", "Redis", "Webhook APIs", "Pytest"],
-    "hibrido": ["Python 3.11", "FastAPI", "TypeScript", "React", "PostgreSQL", "Docker", "Pytest"],
+    "fullstack": ["Python 3.11", "FastAPI", "TypeScript", "React", "PostgreSQL", "Docker", "Pytest"],
 }
 
 
@@ -152,14 +158,14 @@ def _default_profile(project: str) -> dict[str, Any]:
         "source": "default_assumptions",
         "proposal_present": False,
         "project": project,
-        "project_type": "hibrido",
+        "project_type": "fullstack",
         "value_hypothesis": f"Deliver measurable engineering value for {project} with controlled risk.",
         "value_score": 0.62,
         "clarity_score": 0.55,
         "complexity_score": 0.45,
         "feasibility": "media",
         "estimated_duration_weeks": {"min": 4, "avg": 6, "max": 8},
-        "recommended_stack": _STACK_BY_TYPE["hibrido"],
+        "recommended_stack": _STACK_BY_TYPE["fullstack"],
         "key_features": [
             "Structured project intake and feasibility assessment",
             "Requirements, scope, and architecture baseline",
@@ -238,9 +244,9 @@ def _infer_project_type(normalized_text: str) -> str:
     second_score = ranked[1][1]
 
     if top_score == 0:
-        return "hibrido"
+        return "fullstack"
     if second_score > 0 and abs(top_score - second_score) <= 1:
-        return "hibrido"
+        return "fullstack"
     return top_type
 
 
@@ -284,7 +290,7 @@ def _estimate_duration(project_type: str, complexity: float) -> dict[str, int]:
         "frontend": 4,
         "backend": 6,
         "automacao": 5,
-        "hibrido": 8,
+        "fullstack": 8,
     }[project_type]
     avg = max(2, int(round(base_weeks * (0.85 + complexity * 0.9))))
     min_weeks = max(2, int(round(avg * 0.75)))
@@ -404,7 +410,7 @@ def _build_discovery_questions(project_type: str, missing_info: list[str], featu
             "Quais eventos disparam o fluxo e qual comportamento de retry esperado?",
             "Qual plano de monitoramento/alerta para falhas de automacao?",
         ],
-        "hibrido": [
+        "fullstack": [
             "Qual fluxo ponta a ponta deve ser validado primeiro (UI + API + integracoes)?",
             "Qual criterio define prontidao para integrar as camadas em producao?",
         ],
@@ -416,7 +422,7 @@ def _build_discovery_questions(project_type: str, missing_info: list[str], featu
         if question:
             questions.append(question)
 
-    questions.extend(track_questions.get(project_type, track_questions["hibrido"]))
+    questions.extend(track_questions.get(project_type, track_questions["fullstack"]))
     if len(features) <= 2:
         questions.append("Quais funcionalidades devem ficar explicitamente fora do MVP para reduzir risco?")
     questions.extend(

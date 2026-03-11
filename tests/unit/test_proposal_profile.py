@@ -20,7 +20,7 @@ KPI: aumentar taxa de conversao em 20%
     profile = build_proposal_profile("cliente-alpha", text)
 
     assert profile["proposal_present"] is True
-    assert profile["project_type"] in {"automacao", "hibrido", "backend", "frontend"}
+    assert profile["project_type"] in {"automacao", "fullstack", "backend", "frontend"}
     assert isinstance(profile["recommended_stack"], list)
     assert profile["estimated_duration_weeks"]["avg"] >= 2
     assert isinstance(profile["key_features"], list)

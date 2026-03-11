@@ -3,7 +3,7 @@
 Documento gerado no fluxo de proposta para consolidar perguntas, premissas e gaps antes do kickoff.
 
 ## Diagnostico Inicial
-- trilha_principal: hibrido
+- trilha_principal: fullstack
 - ambiguidade: alta
 - recommendation: discovery_required
 
