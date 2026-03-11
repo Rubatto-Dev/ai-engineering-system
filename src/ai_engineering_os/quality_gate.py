@@ -32,6 +32,7 @@ def evaluate_quality_gate(
         "sequential_thinking_configured": tooling["sequential_thinking_ready"],
         "mcp_servers_configured": tooling["mcp_servers_ready"],
         "sonarqube_configured": tooling["sonarqube_ready"],
+        "decision_policy_configured": tooling["decision_policy_ready"],
     }
     overall = all(checks.values())
     return {
@@ -45,21 +46,25 @@ def evaluate_tooling_setup(repo_root: Path) -> dict[str, Any]:
     mcp_status = _read_mcp_status(repo_root / "config" / "mcp-servers.json")
     policy_status = _read_tooling_policy(repo_root / "config" / "tooling.yaml")
     sonar_status = _read_sonar_properties(repo_root / "sonar-project.properties")
+    decision_policy_status = _read_decision_policy_config(repo_root / "config" / "decision_policy.json")
 
     context7_ready = mcp_status["context7_server_ready"] and policy_status["context7_enabled"]
     sequential_ready = mcp_status["sequential_server_ready"] and policy_status["sequential_thinking_enabled"]
     mcp_servers_ready = mcp_status["context7_server_ready"] and mcp_status["sequential_server_ready"]
     sonarqube_ready = sonar_status["configured"] and policy_status["sonarqube_enabled"]
+    decision_policy_ready = decision_policy_status["configured"]
 
     return {
         "context7_ready": context7_ready,
         "sequential_thinking_ready": sequential_ready,
         "mcp_servers_ready": mcp_servers_ready,
         "sonarqube_ready": sonarqube_ready,
+        "decision_policy_ready": decision_policy_ready,
         "details": {
             "mcp": mcp_status,
             "tooling_policy": policy_status,
             "sonarqube": sonar_status,
+            "decision_policy": decision_policy_status,
         },
     }
 
@@ -169,6 +174,64 @@ def _read_sonar_properties(path: Path) -> dict[str, Any]:
 
     required_keys = ["sonar.projectKey", "sonar.sources", "sonar.tests"]
     missing = [key for key in required_keys if not properties.get(key)]
+    result["missing_keys"] = missing
+    result["configured"] = not missing
+    return result
+
+
+def _read_decision_policy_config(path: Path) -> dict[str, Any]:
+    result = {
+        "file_present": path.exists(),
+        "configured": False,
+        "missing_keys": [],
+    }
+    if not path.exists():
+        result["missing_keys"] = ["version", "thresholds", "labels"]
+        result["error"] = "decision_policy_missing"
+        return result
+
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except json.JSONDecodeError:
+        result["error"] = "decision_policy_json_invalid"
+        return result
+
+    if not isinstance(payload, dict):
+        result["error"] = "decision_policy_invalid_shape"
+        return result
+
+    missing: list[str] = []
+    version = payload.get("version")
+    if not isinstance(version, str) or not version.strip():
+        missing.append("version")
+
+    thresholds = payload.get("thresholds")
+    required_thresholds = [
+        "go_min_score",
+        "go_with_caveats_min_score",
+        "go_max_ambiguity_score",
+        "go_max_open_gaps",
+        "no_go_max_score",
+        "no_go_min_open_gaps",
+        "no_go_min_ambiguity_score",
+    ]
+    if not isinstance(thresholds, dict):
+        missing.append("thresholds")
+    else:
+        for key in required_thresholds:
+            if key not in thresholds:
+                missing.append(f"thresholds.{key}")
+
+    labels = payload.get("labels")
+    required_labels = ["go", "go_with_caveats", "no_go"]
+    if not isinstance(labels, dict):
+        missing.append("labels")
+    else:
+        for key in required_labels:
+            value = labels.get(key)
+            if not isinstance(value, str) or not value.strip():
+                missing.append(f"labels.{key}")
+
     result["missing_keys"] = missing
     result["configured"] = not missing
     return result

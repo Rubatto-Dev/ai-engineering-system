@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "thresholds": {
+    "go_min_score": 0.78,
+    "go_with_caveats_min_score": 0.52,
+    "go_max_ambiguity_score": 0.45,
+    "go_max_open_gaps": 2,
+    "no_go_max_score": 0.4,
+    "no_go_min_open_gaps": 7,
+    "no_go_min_ambiguity_score": 0.88
+  },
+  "labels": {
+    "go": "GO",
+    "go_with_caveats": "GO_COM_RESSALVAS",
+    "no_go": "NO_GO"
+  }
+}

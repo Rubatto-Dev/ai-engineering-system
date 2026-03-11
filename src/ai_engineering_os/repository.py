@@ -23,6 +23,7 @@ REQUIRED_DOCS = [
     "16_release_notes.md",
     "27_descoberta_guiada.md",
     "28_validacao_pre_kickoff.md",
+    "31_politica_decisao_comercial.md",
 ]
 
 
@@ -90,6 +91,33 @@ def ensure_structure(repo_root: Path) -> None:
                     "  enforce_document_protocol: true",
                     "  require_three_test_layers: true",
                 ]
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+    decision_policy_path = repo_root / "config" / "decision_policy.json"
+    if not decision_policy_path.exists():
+        decision_policy_path.write_text(
+            json.dumps(
+                {
+                    "version": "1.0.0",
+                    "thresholds": {
+                        "go_min_score": 0.78,
+                        "go_with_caveats_min_score": 0.52,
+                        "go_max_ambiguity_score": 0.45,
+                        "go_max_open_gaps": 2,
+                        "no_go_max_score": 0.40,
+                        "no_go_min_open_gaps": 7,
+                        "no_go_min_ambiguity_score": 0.88,
+                    },
+                    "labels": {
+                        "go": "GO",
+                        "go_with_caveats": "GO_COM_RESSALVAS",
+                        "no_go": "NO_GO",
+                    },
+                },
+                indent=2,
             )
             + "\n",
             encoding="utf-8",

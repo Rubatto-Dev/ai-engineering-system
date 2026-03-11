@@ -260,3 +260,21 @@
   - `npm run quality:python` -> `ok: true`
   - `npm.cmd run runtime:check` -> `ok: true`
   - `npm.cmd run audit:safety` -> `ok: true`
+
+### Etapa 16 - Thresholds comerciais versionados (GO/GO_COM_RESSALVAS/NO_GO)
+
+- Mudanca:
+  - novo modulo `src/ai_engineering_os/decision_policy.py` para carregar/aplicar politica comercial.
+  - nova configuracao versionada em `config/decision_policy.json`.
+  - `IdeaValidator` passou a aplicar policy comercial (decisao base por score + ajuste por ambiguidade/gaps/viabilidade).
+  - quality gate reforcado para validar `decision_policy_configured=true`.
+- Documentacao adicionada:
+  - `docs/31_politica_decisao_comercial.md`
+- Cobertura adicionada:
+  - `tests/unit/test_decision_policy.py`
+  - `tests/unit/test_quality_gate.py` (falha quando decision policy esta ausente)
+- Validacao da etapa:
+  - `npm run test:python` -> `41 passed`
+  - `npm run quality:python` -> `ok: true`
+  - `npm.cmd run runtime:check` -> `ok: true`
+  - `npm.cmd run audit:safety` -> `ok: true`

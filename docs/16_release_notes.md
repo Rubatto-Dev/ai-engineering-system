@@ -33,3 +33,10 @@ Gerado e atualizado automaticamente pelo pipeline.
   - `docs/28_validacao_pre_kickoff.md`
 - Backlog dinamico prioriza discovery quando gaps criticos estao abertos
 - Suite de testes expandida para 37 testes
+
+## Release 0.3.4 - 2026-03-11
+- Thresholds comerciais versionados para decisao (`GO`, `GO_COM_RESSALVAS`, `NO_GO`)
+- Policy engine integrada ao `IdeaValidator`
+- Configuracao em `config/decision_policy.json` validada pelo quality gate
+- Documentacao de governanca adicionada em `docs/31_politica_decisao_comercial.md`
+- Suite de testes expandida para 41 testes

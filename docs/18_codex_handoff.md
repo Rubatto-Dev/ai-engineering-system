@@ -119,6 +119,24 @@
 - Proxima etapa recomendada:
   - versionar thresholds comerciais de decisao por score/ambiguidade/gaps para padronizar aprovacao.
 
+## Atualizacao Fase 3 - Etapa 16 (2026-03-11)
+
+- Objetivo da etapa:
+  - tornar a decisao comercial (`GO`, `GO_COM_RESSALVAS`, `NO_GO`) padronizada e versionada.
+- Entregas:
+  - policy engine em `src/ai_engineering_os/decision_policy.py`.
+  - thresholds versionados em `config/decision_policy.json` (v1.0.0).
+  - `IdeaValidator` integrado com decisao base + decisao final por policy.
+  - quality gate com check `decision_policy_configured`.
+  - documento de governanca: `docs/31_politica_decisao_comercial.md`.
+- Validacao:
+  - `test:python` -> `41 passed`
+  - `quality:python` -> `ok: true`
+  - `runtime:check` -> `ok: true`
+  - `audit:safety` -> `ok: true`
+- Proxima etapa recomendada:
+  - calibrar thresholds por tipo de projeto e coletar historico de decisoes para ajuste fino.
+
 ## Como retomar rapido no Codex
 
 1. Abrir terminal na pasta:

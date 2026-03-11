@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from ..decision_policy import classify_commercial_decision, load_decision_policy
 from ..models import AgentResult, ProjectContext
 from .base import BaseAgent
 
@@ -43,25 +44,32 @@ class IdeaValidatorAgent(BaseAgent):
     def run(self, context: ProjectContext, state: dict[str, Any]) -> AgentResult:
         logger.info("Running Idea Validator for project=%s", context.project)
         proposal_profile = state.get("proposal_profile", {})
+        proposal_data = proposal_profile if isinstance(proposal_profile, dict) else {}
         metrics = self._build_metrics(proposal_profile, state)
         outcome = self.evaluate(metrics)
-        feasibility = str(proposal_profile.get("feasibility", "media"))
+        policy = load_decision_policy(self.repo_root)
+        policy_eval = classify_commercial_decision(float(outcome["score"]), proposal_data, policy)
+        final_decision = str(policy_eval["decision"])
+        base_decision = str(policy_eval["base_decision"])
+        policy_version = str(policy_eval["policy_version"])
+        policy_reasons = policy_eval.get("reasons", [])
+        feasibility = str(proposal_data.get("feasibility", "media"))
         value_hypothesis = str(
-            proposal_profile.get(
+            proposal_data.get(
                 "value_hypothesis",
                 f"Deliver measurable engineering value for {context.project}.",
             )
         )
-        duration = proposal_profile.get("estimated_duration_weeks", {"min": 4, "avg": 6, "max": 8})
-        risks = proposal_profile.get("risks", ["No critical blockers identified with current data."])
-        missing_info = proposal_profile.get("missing_information", [])
-        stack = proposal_profile.get("recommended_stack", ["Python 3.11", "Pytest", "SonarQube"])
-        features = proposal_profile.get("key_features", [])
-        ambiguity_level = str(proposal_profile.get("ambiguity_level", "media"))
-        ambiguity_score = float(proposal_profile.get("ambiguity_score", 0.55))
-        kickoff_recommendation = str(proposal_profile.get("kickoff_recommendation", "discovery_required"))
-        validation_checklist = proposal_profile.get("validation_checklist", [])
-        discovery_questions = proposal_profile.get("discovery_questions", [])
+        duration = proposal_data.get("estimated_duration_weeks", {"min": 4, "avg": 6, "max": 8})
+        risks = proposal_data.get("risks", ["No critical blockers identified with current data."])
+        missing_info = proposal_data.get("missing_information", [])
+        stack = proposal_data.get("recommended_stack", ["Python 3.11", "Pytest", "SonarQube"])
+        features = proposal_data.get("key_features", [])
+        ambiguity_level = str(proposal_data.get("ambiguity_level", "media"))
+        ambiguity_score = float(proposal_data.get("ambiguity_score", 0.55))
+        kickoff_recommendation = str(proposal_data.get("kickoff_recommendation", "discovery_required"))
+        validation_checklist = proposal_data.get("validation_checklist", [])
+        discovery_questions = proposal_data.get("discovery_questions", [])
         features_lines = [f"- {feature}" for feature in features] if isinstance(features, list) and features else ["- Nao informado"]
         stack_lines = [f"- {item}" for item in stack] if isinstance(stack, list) and stack else ["- Nao informado"]
         risks_lines = [f"- {risk}" for risk in risks] if isinstance(risks, list) and risks else ["- Nao informado"]
@@ -76,7 +84,12 @@ class IdeaValidatorAgent(BaseAgent):
             if isinstance(discovery_questions, list) and discovery_questions
             else ["- Sem perguntas registradas"]
         )
-        kickoff_ready = kickoff_recommendation == "ready_for_scope_lock" and outcome["decision"] == "GO"
+        policy_reason_lines = [f"- {item}" for item in policy_reasons] if isinstance(policy_reasons, list) else []
+        if not policy_reason_lines:
+            policy_reason_lines = ["- base_score_threshold_applied"]
+        kickoff_ready = bool(policy_eval.get("scope_lock_ready", False)) and kickoff_recommendation == "ready_for_scope_lock"
+        if final_decision == "NO_GO":
+            kickoff_recommendation = "replan_required"
 
         risks_doc = self._write(
             "docs/09_riscos.md",
@@ -85,19 +98,23 @@ class IdeaValidatorAgent(BaseAgent):
 
 ## Avaliacao Inicial
 
-- decisao: {decision}
+- decisao_base: {base_decision}
+- decisao_final: {final_decision}
 - score: {score}
 - viabilidade: {feasibility}
 - estimativa_semanas: {duration_min}-{duration_max}
+- policy_version: {policy_version}
 
 ## Riscos Identificados
 {risks}
             """.format(
-                decision=outcome["decision"],
+                base_decision=base_decision,
+                final_decision=final_decision,
                 score=outcome["score"],
                 feasibility=feasibility,
                 duration_min=duration.get("min", 4),
                 duration_max=duration.get("max", 8),
+                policy_version=policy_version,
                 risks="\n".join([f"- {risk}" for risk in risks]),
             ),
         )
@@ -108,15 +125,17 @@ class IdeaValidatorAgent(BaseAgent):
                     "# Avaliacao de Proposta",
                     "",
                     f"- projeto: {context.project}",
-                    f"- decisao: {outcome['decision']}",
+                    f"- decisao_base_score: {base_decision}",
+                    f"- decisao: {final_decision}",
                     f"- score: {outcome['score']}",
                     f"- viabilidade: {feasibility}",
                     f"- ambiguidade: {ambiguity_level} (score {ambiguity_score:.2f})",
-                    f"- valor_estimado_score: {proposal_profile.get('value_score', 0.62)}",
+                    f"- valor_estimado_score: {proposal_data.get('value_score', 0.62)}",
                     (
                         f"- duracao_estimada_semanas: {duration.get('min', 4)}-"
                         f"{duration.get('max', 8)} (media {duration.get('avg', 6)})"
                     ),
+                    f"- policy_version: {policy_version}",
                     f"- recommendation: {kickoff_recommendation}",
                     f"- scope_lock_ready: {kickoff_ready}",
                     "",
@@ -140,28 +159,35 @@ class IdeaValidatorAgent(BaseAgent):
                     "",
                     "## Checklist Pre-Kickoff",
                     *checklist_lines,
+                    "",
+                    "## Regras Comerciais Aplicadas",
+                    *policy_reason_lines,
                 ]
             ),
         )
 
-        status = "success" if outcome["decision"] != "NO_GO" else "failed"
+        status = "success" if final_decision != "NO_GO" else "failed"
         return AgentResult(
             agent_id=self.agent_id,
             agent_name=self.agent_name,
             stage=self.stage,
             status=status,
             artifacts=[risks_doc, proposal_eval_doc],
-            notes=f"decision={outcome['decision']} score={outcome['score']}",
+            notes=f"decision={final_decision} score={outcome['score']} policy_version={policy_version}",
             checks={
-                "decision": outcome["decision"],
-                "proposal_profile_loaded": bool(proposal_profile),
+                "decision": final_decision,
+                "decision_base_score": base_decision,
+                "decision_policy_version": policy_version,
+                "proposal_profile_loaded": bool(proposal_data),
                 "kickoff_ready": kickoff_ready,
             },
             outputs={
-                "idea_decision": outcome["decision"],
+                "idea_decision": final_decision,
                 "idea_score": outcome["score"],
                 "kickoff_ready": kickoff_ready,
                 "kickoff_recommendation": kickoff_recommendation,
+                "decision_policy_version": policy_version,
+                "decision_policy_reasons": policy_reasons,
             },
             handoff="08",
         )

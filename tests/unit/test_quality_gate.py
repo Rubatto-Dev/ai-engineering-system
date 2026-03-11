@@ -36,3 +36,14 @@ def test_quality_gate_fails_when_sonar_properties_are_incomplete(tmp_path: Path)
     assert gate["ok"] is False
     assert gate["checks"]["sonarqube_configured"] is False
     assert gate["checks"]["quality_gate_ok"] is False
+
+
+@pytest.mark.unit
+def test_quality_gate_fails_when_decision_policy_is_missing(tmp_path: Path) -> None:
+    ensure_structure(tmp_path)
+    (tmp_path / "config" / "decision_policy.json").unlink()
+
+    gate = evaluate_quality_gate(tmp_path)
+
+    assert gate["ok"] is False
+    assert gate["checks"]["decision_policy_configured"] is False
