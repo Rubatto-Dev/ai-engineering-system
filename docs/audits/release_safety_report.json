@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-11T14:40:54.570397+00:00",
+  "generated_at": "2026-03-11T14:46:44.772895+00:00",
   "repo_root": "C:\\Users\\Guilherme - Hogar\\Desktop\\agents\\ai-engineering-system",
   "ok": true,
   "checks": {
@@ -18,7 +18,7 @@
         "-q"
       ],
       "exit_code": 0,
-      "stdout_tail": ".........................................................                [100%]",
+      "stdout_tail": "..........................................................               [100%]",
       "stderr_tail": ""
     },
     "quality": {
@@ -36,7 +36,8 @@
         "decision_policy_configured": true,
         "stage_validation_policy_configured": true,
         "communication_protocol_configured": true,
-        "agent_training_configured": true
+        "agent_training_configured": true,
+        "npm_scripts_cross_platform": true
       },
       "tooling": {
         "mcp": {
@@ -76,6 +77,12 @@
           "file_present": true,
           "configured": true,
           "missing_keys": []
+        },
+        "npm_scripts": {
+          "file_present": true,
+          "configured": true,
+          "missing_scripts": [],
+          "non_portable_scripts": []
         }
       }
     },
@@ -180,6 +187,7 @@
           "stage_validation_policy_configured": true,
           "communication_protocol_configured": true,
           "agent_training_configured": true,
+          "npm_scripts_cross_platform": true,
           "external_runtime_ok": true
         },
         "tooling": {
@@ -220,6 +228,12 @@
             "file_present": true,
             "configured": true,
             "missing_keys": []
+          },
+          "npm_scripts": {
+            "file_present": true,
+            "configured": true,
+            "missing_scripts": [],
+            "non_portable_scripts": []
           }
         }
       },

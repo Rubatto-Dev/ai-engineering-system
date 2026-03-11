@@ -378,3 +378,21 @@
   - `npm run quality:python` -> `ok: true`
   - `npm.cmd run runtime:check` -> `ok: true`
   - `npm.cmd run audit:safety` -> `ok: true`
+
+### Etapa 21 - Baseline cross-platform (Linux-ready)
+
+- Mudanca:
+  - `package.json` migrado para comandos portaveis:
+    - `python -m pytest`
+    - `python scripts/...`
+    - `docker compose ...` para Sonar
+  - quality gate reforcado com novo check:
+    - `npm_scripts_cross_platform`
+  - `repository.ensure_structure` agora gera `package.json` baseline portavel quando ausente.
+- Cobertura adicionada:
+  - `tests/unit/test_quality_gate.py` com cenario de falha para scripts npm nao portaveis.
+- Validacao da etapa:
+  - `npm run test:python` -> `58 passed`
+  - `npm run quality:python` -> `ok: true`
+  - `npm.cmd run runtime:check` -> `ok: true`
+  - `npm.cmd run audit:safety` -> `ok: true`

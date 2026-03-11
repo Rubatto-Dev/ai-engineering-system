@@ -226,6 +226,22 @@
 - Proxima etapa recomendada:
   - preparar baseline cross-platform para migracao Linux sem friccao.
 
+## Atualizacao Fase 3 - Etapa 21 (2026-03-11)
+
+- Objetivo da etapa:
+  - deixar ambiente pronto para migracao Linux sem dependencias de comandos Windows-only.
+- Entregas:
+  - `package.json` com scripts portaveis (`python ...`, `docker compose ...`).
+  - quality gate com check `npm_scripts_cross_platform`.
+  - `repository.ensure_structure` gerando baseline de `package.json` portavel.
+- Validacao:
+  - `test:python` -> `58 passed`
+  - `quality:python` -> `ok: true`
+  - `runtime:check` -> `ok: true`
+  - `audit:safety` -> `ok: true`
+- Proxima etapa recomendada:
+  - executar migracao assistida para Linux com backup/restore de volumes e secrets.
+
 ## Como retomar rapido no Codex
 
 1. Abrir terminal na pasta:

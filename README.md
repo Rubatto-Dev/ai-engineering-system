@@ -68,7 +68,12 @@ Saidas principais geradas para avaliacao inicial:
 
 - `npm run test:python`
 - `npm run quality:python`
-- `scripts\run_runtime_check.cmd`
+- `npm run runtime:check`
 - `JARVIS: AUDIT repo=<name> strict_external=true`
 - `npm run sonar:up` (inicia SonarQube local em `http://localhost:9000`)
 - `npm run sonar:down`
+
+## Linux-Ready
+
+- Scripts npm estao em baseline cross-platform.
+- O quality gate valida isso via `npm_scripts_cross_platform=true`.

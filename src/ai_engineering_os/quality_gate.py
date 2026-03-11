@@ -36,6 +36,7 @@ def evaluate_quality_gate(
         "stage_validation_policy_configured": tooling["stage_validation_policy_ready"],
         "communication_protocol_configured": tooling["communication_protocol_ready"],
         "agent_training_configured": tooling["agent_training_ready"],
+        "npm_scripts_cross_platform": tooling["npm_scripts_cross_platform_ready"],
     }
     overall = all(checks.values())
     return {
@@ -53,6 +54,7 @@ def evaluate_tooling_setup(repo_root: Path) -> dict[str, Any]:
     stage_validation_policy_status = _read_stage_validation_policy(repo_root / "config" / "stage_validation.json")
     communication_protocol_status = _read_communication_protocol(repo_root / "protocol" / "AGENT_COMMUNICATION_PROTOCOL.md")
     agent_training_status = _read_agent_training_config(repo_root / "config" / "agent_training.json")
+    npm_scripts_status = _read_npm_scripts_config(repo_root / "package.json")
 
     context7_ready = mcp_status["context7_server_ready"] and policy_status["context7_enabled"]
     sequential_ready = mcp_status["sequential_server_ready"] and policy_status["sequential_thinking_enabled"]
@@ -62,6 +64,7 @@ def evaluate_tooling_setup(repo_root: Path) -> dict[str, Any]:
     stage_validation_policy_ready = stage_validation_policy_status["configured"]
     communication_protocol_ready = communication_protocol_status["configured"]
     agent_training_ready = agent_training_status["configured"]
+    npm_scripts_cross_platform_ready = npm_scripts_status["configured"]
 
     return {
         "context7_ready": context7_ready,
@@ -72,6 +75,7 @@ def evaluate_tooling_setup(repo_root: Path) -> dict[str, Any]:
         "stage_validation_policy_ready": stage_validation_policy_ready,
         "communication_protocol_ready": communication_protocol_ready,
         "agent_training_ready": agent_training_ready,
+        "npm_scripts_cross_platform_ready": npm_scripts_cross_platform_ready,
         "details": {
             "mcp": mcp_status,
             "tooling_policy": policy_status,
@@ -80,6 +84,7 @@ def evaluate_tooling_setup(repo_root: Path) -> dict[str, Any]:
             "stage_validation_policy": stage_validation_policy_status,
             "communication_protocol": communication_protocol_status,
             "agent_training": agent_training_status,
+            "npm_scripts": npm_scripts_status,
         },
     }
 
@@ -445,4 +450,66 @@ def _read_agent_training_config(path: Path) -> dict[str, Any]:
 
     result["missing_keys"] = missing
     result["configured"] = not missing
+    return result
+
+
+def _read_npm_scripts_config(path: Path) -> dict[str, Any]:
+    result = {
+        "file_present": path.exists(),
+        "configured": False,
+        "missing_scripts": [],
+        "non_portable_scripts": [],
+    }
+    if not path.exists():
+        result["missing_scripts"] = [
+            "test:python",
+            "quality:python",
+            "runtime:check",
+            "audit:safety",
+            "policy:calibrate",
+            "agents:leaderboard",
+            "sonar:up",
+            "sonar:down",
+        ]
+        result["error"] = "package_json_missing"
+        return result
+
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except json.JSONDecodeError:
+        result["error"] = "package_json_invalid"
+        return result
+
+    if not isinstance(payload, dict):
+        result["error"] = "package_json_invalid_shape"
+        return result
+
+    scripts = payload.get("scripts")
+    if not isinstance(scripts, dict):
+        result["error"] = "package_scripts_missing"
+        return result
+
+    required_scripts = [
+        "test:python",
+        "quality:python",
+        "runtime:check",
+        "audit:safety",
+        "policy:calibrate",
+        "agents:leaderboard",
+        "sonar:up",
+        "sonar:down",
+    ]
+    missing_scripts = [key for key in required_scripts if not isinstance(scripts.get(key), str) or not scripts.get(key)]
+    result["missing_scripts"] = missing_scripts
+
+    non_portable: list[str] = []
+    for key in required_scripts:
+        command = scripts.get(key)
+        if not isinstance(command, str):
+            continue
+        normalized = command.lower()
+        if ".cmd" in normalized or "\\" in command:
+            non_portable.append(key)
+    result["non_portable_scripts"] = non_portable
+    result["configured"] = not missing_scripts and not non_portable
     return result

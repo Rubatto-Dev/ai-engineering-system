@@ -107,5 +107,6 @@
   - etapa 18: refinar calibracao com janela temporal e regra de variancia minima por segmento
   - etapa 19: bloquear pipeline sem validacao completa por etapa e formalizar programa de treinamento de agentes
   - etapa 20: operacionalizar leaderboard automatizado para scorecard e shadow mode continuo
+  - etapa 21: baseline cross-platform para operacao Linux-ready
 - Proxima etapa:
-  - etapa 21: preparar baseline cross-platform (Linux-ready) para scripts operacionais
+  - etapa 22: executar migracao assistida para Linux com restore de dados e validacao final

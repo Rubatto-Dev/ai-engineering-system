@@ -18,6 +18,7 @@ def test_quality_gate_passes_with_default_structure(tmp_path: Path) -> None:
     assert gate["checks"]["stage_validation_policy_configured"] is True
     assert gate["checks"]["communication_protocol_configured"] is True
     assert gate["checks"]["agent_training_configured"] is True
+    assert gate["checks"]["npm_scripts_cross_platform"] is True
 
 
 @pytest.mark.unit
@@ -97,3 +98,17 @@ def test_quality_gate_fails_when_agent_training_policy_is_missing(tmp_path: Path
 
     assert gate["ok"] is False
     assert gate["checks"]["agent_training_configured"] is False
+
+
+@pytest.mark.unit
+def test_quality_gate_fails_when_npm_scripts_are_non_portable(tmp_path: Path) -> None:
+    ensure_structure(tmp_path)
+    (tmp_path / "package.json").write_text(
+        '{"scripts":{"test:python":"scripts\\\\run_pytest.cmd","quality:python":"python scripts/quality_check.py","runtime:check":"python scripts/runtime_check.py","audit:safety":"python scripts/release_safety_audit.py","policy:calibrate":"python scripts/decision_policy_calibration.py --write-policy","agents:leaderboard":"python scripts/agent_leaderboard.py","sonar:up":"docker compose up -d","sonar:down":"docker compose down"}}',
+        encoding="utf-8",
+    )
+
+    gate = evaluate_quality_gate(tmp_path)
+
+    assert gate["ok"] is False
+    assert gate["checks"]["npm_scripts_cross_platform"] is False

@@ -31,7 +31,7 @@
 
 ## Runtime Readiness
 
-- Run `scripts\run_runtime_check.cmd` to validate Node, npm, MCP runtime startup, and SonarQube API reachability.
+- Run `npm run runtime:check` to validate Node, npm, MCP runtime startup, and SonarQube API reachability.
 - Result is `ok: true` only when all external runtime checks pass.
 
 ## Strict Audit
@@ -90,3 +90,9 @@
 - Config file:
   - `config/agent_training.json`
 - Promotion/readiness criteria are evaluated from rolling history.
+
+## Cross-Platform Readiness
+
+- `package.json` scripts are Linux-ready and Windows-ready.
+- Quality gate enforces portability through:
+  - `checks.npm_scripts_cross_platform = true`

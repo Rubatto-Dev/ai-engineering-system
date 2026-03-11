@@ -249,6 +249,31 @@ def ensure_structure(repo_root: Path) -> None:
             encoding="utf-8",
         )
 
+    package_json_path = repo_root / "package.json"
+    if not package_json_path.exists():
+        package_json_path.write_text(
+            json.dumps(
+                {
+                    "name": "ai-engineering-system",
+                    "version": "1.0.0",
+                    "description": "AI engineering system bootstrap package",
+                    "scripts": {
+                        "test:python": "python -m pytest",
+                        "quality:python": "python scripts/quality_check.py",
+                        "runtime:check": "python scripts/runtime_check.py",
+                        "audit:safety": "python scripts/release_safety_audit.py",
+                        "policy:calibrate": "python scripts/decision_policy_calibration.py --write-policy",
+                        "agents:leaderboard": "python scripts/agent_leaderboard.py",
+                        "sonar:up": "docker compose --profile tooling up -d sonarqube",
+                        "sonar:down": "docker compose --profile tooling down",
+                    },
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
     communication_protocol_path = repo_root / "protocol" / "AGENT_COMMUNICATION_PROTOCOL.md"
     if not communication_protocol_path.exists():
         communication_protocol_path.write_text(

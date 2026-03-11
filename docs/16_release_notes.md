@@ -70,3 +70,9 @@ Gerado e atualizado automaticamente pelo pipeline.
   - `docs/audits/agent_leaderboard.json`
   - `docs/audits/shadow_mode_report.json`
 - Suite de testes expandida para 57 testes
+
+## Release 0.3.9 - 2026-03-11
+- Scripts npm migrados para baseline cross-platform (Windows/Linux)
+- Novo check de prontidao Linux no quality gate: `npm_scripts_cross_platform`
+- Bootstrap do repositorio agora cria `package.json` portavel quando ausente
+- Suite de testes expandida para 58 testes
