@@ -1,0 +1,29 @@
+{
+  "name": "ai-engineering-system",
+  "version": "1.0.0",
+  "description": "Sistema de engenharia assistida por IA orientado por agentes, com protocolo Jarvis, memoria global, quality gate e validacao por testes em 3 camadas.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "mcp:sequential-thinking": "npx @modelcontextprotocol/server-sequential-thinking",
+    "mcp:context7": "npx @upstash/context7-mcp",
+    "mcp:github": "mcp-server-github",
+    "test:python": "scripts\\run_pytest.cmd",
+    "quality:python": "scripts\\run_quality.cmd",
+    "runtime:check": "scripts\\run_runtime_check.cmd",
+    "sonar:up": "scripts\\start_sonarqube.cmd",
+    "sonar:down": "scripts\\stop_sonarqube.cmd"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@modelcontextprotocol/server-sequential-thinking": "^2025.12.18",
+    "@upstash/context7-mcp": "^2.1.3"
+  }
+}

@@ -1,0 +1,22 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Backlog",
+  "type": "object",
+  "required": ["items"],
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "priority", "effort", "acceptance_criteria"],
+        "properties": {
+          "id": {"type": "string"},
+          "description": {"type": "string"},
+          "priority": {"type": "string"},
+          "effort": {"type": "integer", "minimum": 1},
+          "acceptance_criteria": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}

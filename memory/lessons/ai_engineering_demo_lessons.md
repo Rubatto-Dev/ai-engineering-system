@@ -1,0 +1,3 @@
+- 2026-03-06T12:53:37.685190+00:00: Keep strict gate validation before ship
+- 2026-03-06T14:17:46.513461+00:00: Use strict stage handoff and quality-gate checks before ship.
+- 2026-03-06T14:20:35.518539+00:00: Use strict stage handoff and quality-gate checks before ship.

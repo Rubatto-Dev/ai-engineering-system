@@ -1,0 +1,1 @@
+- 2026-03-06T15:31:11.648109+00:00: Use strict stage handoff and quality-gate checks before ship.

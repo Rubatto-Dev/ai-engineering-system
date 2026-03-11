@@ -1,0 +1,5 @@
+# Patterns
+
+- context7:ship_gate_demo_architecture_and_delivery_patterns:official_docs
+- context7:ship_gate_demo_architecture_and_delivery_patterns:reference_patterns
+- context7:ship_gate_demo_architecture_and_delivery_patterns:known_pitfalls

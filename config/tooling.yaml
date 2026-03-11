@@ -1,0 +1,18 @@
+﻿integrations:
+  context7:
+    enabled: true
+    role: context_enrichment
+    usage: planning_and_requirements
+  sequential_thinking:
+    enabled: true
+    role: structured_reasoning
+    usage: decomposition_and_decisioning
+  sonarqube:
+    enabled: true
+    role: quality_gate
+    usage: pre_ship_validation
+
+policies:
+  source_of_truth: AI_ENGINEERING_OS.md
+  enforce_document_protocol: true
+  require_three_test_layers: true

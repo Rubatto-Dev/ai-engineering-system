@@ -1,0 +1,29 @@
+Metadata-Version: 2.4
+Name: ai-engineering-os
+Version: 0.1.0
+Summary: Jarvis integrated AI engineering operating system
+Author: AI Engineering Team
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=5.0.0; extra == "dev"
+
+﻿# AI Engineering System
+
+Sistema de engenharia assistida por IA orientado por agentes, com protocolo Jarvis, memoria global, quality gate e validacao por testes em 3 camadas.
+
+## Stack inicial
+
+- Python 3.10+
+- Pytest (unit, integration, e2e)
+- SonarQube (quality gate externo, via integracao)
+- Context7 e Sequential Thinking (fontes de contexto e raciocinio estruturado)
+
+## Comandos Jarvis
+
+- `JARVIS: START project=<name>`
+- `JARVIS: PLAN cycle=<n>`
+- `JARVIS: EXEC cycle=<n> mode=autopilot_safe`
+- `JARVIS: AUDIT repo=<name>`
+- `JARVIS: SHIP version=<semver>`

@@ -1,0 +1,11 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Requisitos",
+  "type": "object",
+  "required": ["project", "functional", "non_functional"],
+  "properties": {
+    "project": {"type": "string"},
+    "functional": {"type": "array", "items": {"type": "string"}},
+    "non_functional": {"type": "array", "items": {"type": "string"}}
+  }
+}
