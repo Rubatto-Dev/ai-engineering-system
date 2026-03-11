@@ -93,5 +93,8 @@
   - etapa 4: ampliar cenarios de auditoria estrita (`strict_external`) e bloqueio de ship
   - etapa 5: consolidar pacote de auditoria de release safety com evidencia automatica
   - etapa 6: consolidar changelog tecnico e criterios de aceite da Fase 2
+  - etapa 7: criar branch, commit e publicar PR interno de consolidacao
+  - etapa 8: publicar checklist de revisao e criterio de merge do PR
+  - etapa 9: consolidar plano de risco e rollback para merge seguro
 - Proxima etapa:
-  - etapa 7: preparar branch/commit de consolidacao e abrir PR interno
+  - etapa 10: aplicar review final no PR e decidir merge

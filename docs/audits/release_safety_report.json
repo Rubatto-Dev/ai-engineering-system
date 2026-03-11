@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-11T11:52:41.019833+00:00",
+  "generated_at": "2026-03-11T12:01:52.865496+00:00",
   "repo_root": "C:\\Users\\Guilherme - Hogar\\Desktop\\agents\\ai-engineering-system",
   "ok": true,
   "checks": {
@@ -112,10 +112,10 @@
             "npx.cmd",
             "@upstash/context7-mcp"
           ],
-          "mode": "running_after_timeout",
-          "exit_code": null,
+          "mode": "exited",
+          "exit_code": 0,
           "stdout": "",
-          "stderr": ""
+          "stderr": "Context7 Documentation MCP Server v2.1.3 running on stdio\n"
         },
         "sequential_thinking": {
           "ok": true,
@@ -123,10 +123,10 @@
             "npx.cmd",
             "@modelcontextprotocol/server-sequential-thinking"
           ],
-          "mode": "running_after_timeout",
-          "exit_code": null,
+          "mode": "exited",
+          "exit_code": 0,
           "stdout": "",
-          "stderr": ""
+          "stderr": "Sequential Thinking MCP Server running on stdio\n"
         },
         "sonarqube": {
           "ok": true,
@@ -237,10 +237,10 @@
               "npx.cmd",
               "@upstash/context7-mcp"
             ],
-            "mode": "running_after_timeout",
-            "exit_code": null,
+            "mode": "exited",
+            "exit_code": 0,
             "stdout": "",
-            "stderr": ""
+            "stderr": "Context7 Documentation MCP Server v2.1.3 running on stdio\n"
           },
           "sequential_thinking": {
             "ok": true,

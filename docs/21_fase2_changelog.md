@@ -54,3 +54,9 @@
 ## Proxima acao recomendada
 
 - Abrir PR interno de consolidacao da Fase 2 com este changelog e evidencia de auditoria.
+
+## Estado atual
+
+- PR interno criado.
+- Checklist de revisao publicado em `docs/22_pr_review_checklist.md`.
+- Plano de risco e rollback publicado em `docs/23_merge_risk_rollback.md`.

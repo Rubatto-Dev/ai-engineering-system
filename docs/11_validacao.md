@@ -127,3 +127,35 @@
   - riscos residuais e acao recomendada para PR interno
 - Validacao da etapa:
   - evidencias da etapa 5 reutilizadas (sem alteracao de codigo)
+
+### Etapa 7 - PR interno de consolidacao
+
+- Mudanca:
+  - branch criada: `feat/fase2-release-safety-hardening`
+  - commit de consolidacao publicado no remoto
+- Evidencia:
+  - commit: `a8f9439`
+  - branch remota: `origin/feat/fase2-release-safety-hardening`
+- Validacao da etapa:
+  - PR aberto manualmente no GitHub pelo responsavel
+
+### Etapa 8 - Checklist de revisao do PR
+
+- Mudanca:
+  - novo documento `docs/22_pr_review_checklist.md`
+- Cobertura adicionada:
+  - checklist tecnico, operacional, documental e criterio de merge
+  - template de comentario final de review
+- Validacao da etapa:
+  - validacao tecnica reexecutada apos atualizacao documental
+
+### Etapa 9 - Plano de risco e rollback de merge
+
+- Mudanca:
+  - novo documento `docs/23_merge_risk_rollback.md`
+- Cobertura adicionada:
+  - gates obrigatorios pre-merge
+  - matriz de risco de merge
+  - procedimento de rollback pos-merge
+- Validacao da etapa:
+  - validacao tecnica reexecutada apos atualizacao documental
