@@ -50,6 +50,8 @@
 - Save the client proposal file in the repository (example: `proposals/cliente_x.md`).
 - If the proposal is vague, the pipeline generates guided discovery and pre-kickoff gates automatically.
 - Commercial decision thresholds are versioned in `config/decision_policy.json`.
+- Run segment calibration with real decision history:
+  - `npm run policy:calibrate`
 - Start with proposal context:
   - `JARVIS: START project=<name> proposal_file=proposals/cliente_x.md`
 - Run execution cycle to produce proposal assessment:
@@ -61,3 +63,5 @@
   - `docs/27_descoberta_guiada.md`
   - `docs/28_validacao_pre_kickoff.md`
   - `docs/31_politica_decisao_comercial.md`
+  - `docs/audits/proposal_decision_history.jsonl`
+  - `docs/audits/decision_policy_calibration_report.json`

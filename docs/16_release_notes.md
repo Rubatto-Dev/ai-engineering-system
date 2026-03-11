@@ -40,3 +40,10 @@ Gerado e atualizado automaticamente pelo pipeline.
 - Configuracao em `config/decision_policy.json` validada pelo quality gate
 - Documentacao de governanca adicionada em `docs/31_politica_decisao_comercial.md`
 - Suite de testes expandida para 41 testes
+
+## Release 0.3.5 - 2026-03-11
+- Calibracao de thresholds por segmento (`frontend`, `backend`, `automacao`, `fullstack`) com historico real
+- Historico de decisao operacional em `docs/audits/proposal_decision_history.jsonl`
+- Relatorio de calibracao em `docs/audits/decision_policy_calibration_report.json`
+- Comando operacional novo: `npm run policy:calibrate`
+- Suite de testes expandida para 45 testes

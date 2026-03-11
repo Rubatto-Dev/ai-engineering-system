@@ -61,6 +61,16 @@ def test_load_decision_policy_reads_versioned_config(tmp_path: Path) -> None:
                     "go_with_caveats": "GO_COM_RESSALVAS",
                     "no_go": "NO_GO",
                 },
+                "segment_thresholds": {
+                    "frontend": {"thresholds": {"go_min_score": 0.81}},
+                    "backend": {"thresholds": {"go_min_score": 0.82}},
+                    "automacao": {"thresholds": {"go_min_score": 0.73}},
+                    "fullstack": {"thresholds": {"go_min_score": 0.80}},
+                },
+                "calibration": {
+                    "min_samples_per_segment": 3,
+                    "history_file": "docs/audits/proposal_decision_history.jsonl",
+                },
             }
         ),
         encoding="utf-8",
@@ -71,3 +81,21 @@ def test_load_decision_policy_reads_versioned_config(tmp_path: Path) -> None:
     assert policy["version"] == "1.2.0"
     assert policy["source"] == "config"
     assert policy["thresholds"]["go_min_score"] == 0.80
+    assert policy["segment_thresholds"]["backend"]["thresholds"]["go_min_score"] == 0.82
+
+
+@pytest.mark.unit
+def test_decision_policy_uses_segment_thresholds_when_project_type_is_backend(tmp_path: Path) -> None:
+    policy = load_decision_policy(tmp_path)
+    profile = {
+        "project_type": "backend",
+        "feasibility": "alta",
+        "ambiguity_score": 0.35,
+        "missing_information": ["deadline"],
+    }
+
+    result = classify_commercial_decision(0.79, profile, policy)
+
+    assert result["project_segment"] == "backend"
+    assert result["thresholds"]["go_min_score"] == 0.80
+    assert result["decision"] == "GO_COM_RESSALVAS"

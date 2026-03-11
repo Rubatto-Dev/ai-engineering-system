@@ -137,6 +137,31 @@
 - Proxima etapa recomendada:
   - calibrar thresholds por tipo de projeto e coletar historico de decisoes para ajuste fino.
 
+## Atualizacao Fase 3 - Etapa 17 (2026-03-11)
+
+- Objetivo da etapa:
+  - calibrar thresholds comerciais por segmento com dados reais do historico de decisoes.
+- Entregas:
+  - `IdeaValidator` passou a registrar historico em `docs/audits/proposal_decision_history.jsonl`.
+  - calibrador segmentado implementado em `src/ai_engineering_os/decision_calibration.py`.
+  - comando operacional `npm run policy:calibrate`.
+  - relatorio de calibracao gerado em `docs/audits/decision_policy_calibration_report.json`.
+  - `config/decision_policy.json` atualizado para versao `1.1.1` com `segment_thresholds` calibrados.
+- Evidencias:
+  - historico consolidado com `23` registros.
+  - amostragem por segmento:
+    - frontend: `5`
+    - backend: `5`
+    - automacao: `5`
+    - fullstack: `8`
+- Validacao:
+  - `test:python` -> `45 passed`
+  - `quality:python` -> `ok: true`
+  - `runtime:check` -> `ok: true`
+  - `audit:safety` -> `ok: true`
+- Proxima etapa recomendada:
+  - refinar calibracao com janela temporal e regra de estabilidade por segmento.
+
 ## Como retomar rapido no Codex
 
 1. Abrir terminal na pasta:

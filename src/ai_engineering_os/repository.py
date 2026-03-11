@@ -101,7 +101,7 @@ def ensure_structure(repo_root: Path) -> None:
         decision_policy_path.write_text(
             json.dumps(
                 {
-                    "version": "1.0.0",
+                    "version": "1.1.0",
                     "thresholds": {
                         "go_min_score": 0.78,
                         "go_with_caveats_min_score": 0.52,
@@ -115,6 +115,57 @@ def ensure_structure(repo_root: Path) -> None:
                         "go": "GO",
                         "go_with_caveats": "GO_COM_RESSALVAS",
                         "no_go": "NO_GO",
+                    },
+                    "segment_thresholds": {
+                        "frontend": {
+                            "thresholds": {
+                                "go_min_score": 0.76,
+                                "go_with_caveats_min_score": 0.50,
+                                "go_max_ambiguity_score": 0.42,
+                                "go_max_open_gaps": 2,
+                                "no_go_max_score": 0.38,
+                                "no_go_min_open_gaps": 6,
+                                "no_go_min_ambiguity_score": 0.85,
+                            }
+                        },
+                        "backend": {
+                            "thresholds": {
+                                "go_min_score": 0.80,
+                                "go_with_caveats_min_score": 0.54,
+                                "go_max_ambiguity_score": 0.40,
+                                "go_max_open_gaps": 2,
+                                "no_go_max_score": 0.40,
+                                "no_go_min_open_gaps": 6,
+                                "no_go_min_ambiguity_score": 0.84,
+                            }
+                        },
+                        "automacao": {
+                            "thresholds": {
+                                "go_min_score": 0.74,
+                                "go_with_caveats_min_score": 0.50,
+                                "go_max_ambiguity_score": 0.48,
+                                "go_max_open_gaps": 3,
+                                "no_go_max_score": 0.36,
+                                "no_go_min_open_gaps": 7,
+                                "no_go_min_ambiguity_score": 0.86,
+                            }
+                        },
+                        "fullstack": {
+                            "thresholds": {
+                                "go_min_score": 0.79,
+                                "go_with_caveats_min_score": 0.53,
+                                "go_max_ambiguity_score": 0.44,
+                                "go_max_open_gaps": 2,
+                                "no_go_max_score": 0.39,
+                                "no_go_min_open_gaps": 7,
+                                "no_go_min_ambiguity_score": 0.87,
+                            }
+                        },
+                    },
+                    "calibration": {
+                        "min_samples_per_segment": 5,
+                        "history_file": "docs/audits/proposal_decision_history.jsonl",
+                        "last_calibrated_at": None,
                     },
                 },
                 indent=2,

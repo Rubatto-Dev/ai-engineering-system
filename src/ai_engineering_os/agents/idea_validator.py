@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import logging
+from datetime import datetime, timezone
 from typing import Any
 
 from ..decision_policy import classify_commercial_decision, load_decision_policy
@@ -52,6 +54,7 @@ class IdeaValidatorAgent(BaseAgent):
         final_decision = str(policy_eval["decision"])
         base_decision = str(policy_eval["base_decision"])
         policy_version = str(policy_eval["policy_version"])
+        project_segment = str(policy_eval.get("project_segment", "fullstack"))
         policy_reasons = policy_eval.get("reasons", [])
         feasibility = str(proposal_data.get("feasibility", "media"))
         value_hypothesis = str(
@@ -127,6 +130,7 @@ class IdeaValidatorAgent(BaseAgent):
                     f"- projeto: {context.project}",
                     f"- decisao_base_score: {base_decision}",
                     f"- decisao: {final_decision}",
+                    f"- segmento: {project_segment}",
                     f"- score: {outcome['score']}",
                     f"- viabilidade: {feasibility}",
                     f"- ambiguidade: {ambiguity_level} (score {ambiguity_score:.2f})",
@@ -165,6 +169,18 @@ class IdeaValidatorAgent(BaseAgent):
                 ]
             ),
         )
+        decision_history_path = self._record_decision_snapshot(
+            context=context,
+            project_segment=project_segment,
+            final_decision=final_decision,
+            base_decision=base_decision,
+            score=float(outcome["score"]),
+            ambiguity_score=ambiguity_score,
+            feasibility=feasibility,
+            open_gaps=len(missing_info) if isinstance(missing_info, list) else 0,
+            policy_version=policy_version,
+            policy_reasons=policy_reasons if isinstance(policy_reasons, list) else [],
+        )
 
         status = "success" if final_decision != "NO_GO" else "failed"
         return AgentResult(
@@ -172,12 +188,13 @@ class IdeaValidatorAgent(BaseAgent):
             agent_name=self.agent_name,
             stage=self.stage,
             status=status,
-            artifacts=[risks_doc, proposal_eval_doc],
+            artifacts=[risks_doc, proposal_eval_doc, decision_history_path],
             notes=f"decision={final_decision} score={outcome['score']} policy_version={policy_version}",
             checks={
                 "decision": final_decision,
                 "decision_base_score": base_decision,
                 "decision_policy_version": policy_version,
+                "decision_project_segment": project_segment,
                 "proposal_profile_loaded": bool(proposal_data),
                 "kickoff_ready": kickoff_ready,
             },
@@ -188,6 +205,7 @@ class IdeaValidatorAgent(BaseAgent):
                 "kickoff_recommendation": kickoff_recommendation,
                 "decision_policy_version": policy_version,
                 "decision_policy_reasons": policy_reasons,
+                "decision_project_segment": project_segment,
             },
             handoff="08",
         )
@@ -222,3 +240,35 @@ class IdeaValidatorAgent(BaseAgent):
                 "cost_confidence": 0.75,
             },
         )
+
+    def _record_decision_snapshot(
+        self,
+        context: ProjectContext,
+        project_segment: str,
+        final_decision: str,
+        base_decision: str,
+        score: float,
+        ambiguity_score: float,
+        feasibility: str,
+        open_gaps: int,
+        policy_version: str,
+        policy_reasons: list[str],
+    ) -> str:
+        entry = {
+            "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+            "project": context.project,
+            "cycle": context.cycle,
+            "mode": context.mode,
+            "project_segment": project_segment,
+            "decision": final_decision,
+            "base_decision": base_decision,
+            "score": round(score, 4),
+            "ambiguity_score": round(ambiguity_score, 4),
+            "feasibility": feasibility,
+            "open_gaps": open_gaps,
+            "policy_version": policy_version,
+            "policy_reasons": policy_reasons,
+        }
+        history_path = "docs/audits/proposal_decision_history.jsonl"
+        self._append(history_path, json.dumps(entry, ensure_ascii=False) + "\n")
+        return str(self.repo_root / history_path)

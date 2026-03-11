@@ -6,22 +6,85 @@ from typing import Any
 
 
 POLICY_FILE = Path("config") / "decision_policy.json"
+PROJECT_SEGMENTS = ["frontend", "backend", "automacao", "fullstack"]
+REQUIRED_THRESHOLD_KEYS = [
+    "go_min_score",
+    "go_with_caveats_min_score",
+    "go_max_ambiguity_score",
+    "go_max_open_gaps",
+    "no_go_max_score",
+    "no_go_min_open_gaps",
+    "no_go_min_ambiguity_score",
+]
+
+_DEFAULT_THRESHOLDS: dict[str, float | int] = {
+    "go_min_score": 0.78,
+    "go_with_caveats_min_score": 0.52,
+    "go_max_ambiguity_score": 0.45,
+    "go_max_open_gaps": 2,
+    "no_go_max_score": 0.40,
+    "no_go_min_open_gaps": 7,
+    "no_go_min_ambiguity_score": 0.88,
+}
 
 _DEFAULT_POLICY: dict[str, Any] = {
-    "version": "1.0.0",
-    "thresholds": {
-        "go_min_score": 0.78,
-        "go_with_caveats_min_score": 0.52,
-        "go_max_ambiguity_score": 0.45,
-        "go_max_open_gaps": 2,
-        "no_go_max_score": 0.40,
-        "no_go_min_open_gaps": 7,
-        "no_go_min_ambiguity_score": 0.88,
-    },
+    "version": "1.1.0",
+    "thresholds": _DEFAULT_THRESHOLDS,
     "labels": {
         "go": "GO",
         "go_with_caveats": "GO_COM_RESSALVAS",
         "no_go": "NO_GO",
+    },
+    "segment_thresholds": {
+        "frontend": {
+            "thresholds": {
+                "go_min_score": 0.76,
+                "go_with_caveats_min_score": 0.50,
+                "go_max_ambiguity_score": 0.42,
+                "go_max_open_gaps": 2,
+                "no_go_max_score": 0.38,
+                "no_go_min_open_gaps": 6,
+                "no_go_min_ambiguity_score": 0.85,
+            }
+        },
+        "backend": {
+            "thresholds": {
+                "go_min_score": 0.80,
+                "go_with_caveats_min_score": 0.54,
+                "go_max_ambiguity_score": 0.40,
+                "go_max_open_gaps": 2,
+                "no_go_max_score": 0.40,
+                "no_go_min_open_gaps": 6,
+                "no_go_min_ambiguity_score": 0.84,
+            }
+        },
+        "automacao": {
+            "thresholds": {
+                "go_min_score": 0.74,
+                "go_with_caveats_min_score": 0.50,
+                "go_max_ambiguity_score": 0.48,
+                "go_max_open_gaps": 3,
+                "no_go_max_score": 0.36,
+                "no_go_min_open_gaps": 7,
+                "no_go_min_ambiguity_score": 0.86,
+            }
+        },
+        "fullstack": {
+            "thresholds": {
+                "go_min_score": 0.79,
+                "go_with_caveats_min_score": 0.53,
+                "go_max_ambiguity_score": 0.44,
+                "go_max_open_gaps": 2,
+                "no_go_max_score": 0.39,
+                "no_go_min_open_gaps": 7,
+                "no_go_min_ambiguity_score": 0.87,
+            }
+        },
+    },
+    "calibration": {
+        "min_samples_per_segment": 5,
+        "history_file": "docs/audits/proposal_decision_history.jsonl",
+        "last_calibrated_at": None,
     },
 }
 
@@ -50,6 +113,19 @@ def load_decision_policy(repo_root: Path) -> dict[str, Any]:
     return merged
 
 
+def resolve_thresholds_for_segment(policy: dict[str, Any], project_segment: str) -> dict[str, Any]:
+    segment = project_segment if project_segment in PROJECT_SEGMENTS else "fullstack"
+    base = _normalize_thresholds(policy.get("thresholds", {}), _DEFAULT_THRESHOLDS)
+
+    segment_thresholds = (
+        policy.get("segment_thresholds", {}).get(segment, {}).get("thresholds", {})
+        if isinstance(policy.get("segment_thresholds"), dict)
+        else {}
+    )
+    merged = _normalize_thresholds(segment_thresholds, base)
+    return {"project_segment": segment, "thresholds": merged}
+
+
 def classify_commercial_decision(
     score: float,
     proposal_profile: dict[str, Any] | None,
@@ -57,8 +133,10 @@ def classify_commercial_decision(
 ) -> dict[str, Any]:
     profile = proposal_profile if isinstance(proposal_profile, dict) else {}
     active_policy = _merge_policy(_deep_copy(_DEFAULT_POLICY), policy if isinstance(policy, dict) else {})
-    thresholds = active_policy["thresholds"]
     labels = active_policy["labels"]
+    segment = _segment_from_profile(profile)
+    resolved = resolve_thresholds_for_segment(active_policy, segment)
+    thresholds = resolved["thresholds"]
 
     go_min = float(thresholds["go_min_score"])
     caveats_min = float(thresholds["go_with_caveats_min_score"])
@@ -117,6 +195,7 @@ def classify_commercial_decision(
         "decision": decision,
         "base_decision": base_decision,
         "policy_version": str(active_policy.get("version", "unknown")),
+        "project_segment": segment,
         "thresholds": thresholds,
         "reasons": reasons,
         "context": {
@@ -131,28 +210,71 @@ def classify_commercial_decision(
 
 def _merge_policy(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any]:
     merged = _deep_copy(base)
+
     if "version" in override and isinstance(override["version"], str) and override["version"].strip():
         merged["version"] = override["version"].strip()
 
-    thresholds = merged.get("thresholds", {})
-    if isinstance(override.get("thresholds"), dict):
-        for key, default_value in thresholds.items():
-            if isinstance(default_value, int):
-                thresholds[key] = _as_int(override["thresholds"].get(key), default_value)
-            else:
-                thresholds[key] = _as_float(override["thresholds"].get(key), float(default_value))
-    merged["thresholds"] = thresholds
+    merged["thresholds"] = _normalize_thresholds(override.get("thresholds", {}), merged["thresholds"])
 
     labels = merged.get("labels", {})
     if isinstance(override.get("labels"), dict):
         for key, default_value in labels.items():
             value = override["labels"].get(key)
-            if isinstance(value, str) and value.strip():
-                labels[key] = value.strip()
-            else:
-                labels[key] = default_value
+            labels[key] = value.strip() if isinstance(value, str) and value.strip() else default_value
     merged["labels"] = labels
+
+    segment_thresholds = merged.get("segment_thresholds", {})
+    override_segments = override.get("segment_thresholds")
+    if isinstance(override_segments, dict):
+        for segment in PROJECT_SEGMENTS:
+            baseline = segment_thresholds.get(segment, {}).get("thresholds", merged["thresholds"])
+            raw_segment = override_segments.get(segment, {})
+            if isinstance(raw_segment, dict):
+                if isinstance(raw_segment.get("thresholds"), dict):
+                    candidate = raw_segment["thresholds"]
+                else:
+                    candidate = raw_segment
+                normalized = _normalize_thresholds(candidate, baseline)
+                segment_thresholds[segment] = {"thresholds": normalized}
+    merged["segment_thresholds"] = segment_thresholds
+
+    calibration = merged.get("calibration", {})
+    override_calibration = override.get("calibration")
+    if isinstance(override_calibration, dict):
+        calibration["min_samples_per_segment"] = _as_int(
+            override_calibration.get("min_samples_per_segment"),
+            _as_int(calibration.get("min_samples_per_segment"), 5),
+        )
+        history_file = override_calibration.get("history_file")
+        if isinstance(history_file, str) and history_file.strip():
+            calibration["history_file"] = history_file.strip()
+        last_calibrated_at = override_calibration.get("last_calibrated_at")
+        if isinstance(last_calibrated_at, str) and last_calibrated_at.strip():
+            calibration["last_calibrated_at"] = last_calibrated_at.strip()
+    merged["calibration"] = calibration
+
     return merged
+
+
+def _normalize_thresholds(raw: Any, fallback: dict[str, float | int]) -> dict[str, float | int]:
+    normalized = _deep_copy(fallback)
+    if not isinstance(raw, dict):
+        return normalized
+
+    for key, default_value in fallback.items():
+        value = raw.get(key)
+        if isinstance(default_value, int):
+            normalized[key] = _as_int(value, int(default_value))
+        else:
+            normalized[key] = _as_float(value, float(default_value))
+    return normalized
+
+
+def _segment_from_profile(profile: dict[str, Any]) -> str:
+    project_type = str(profile.get("project_type", "fullstack")).strip().lower()
+    if project_type in PROJECT_SEGMENTS:
+        return project_type
+    return "fullstack"
 
 
 def _as_float(value: Any, default: float) -> float:
@@ -169,5 +291,5 @@ def _as_int(value: Any, default: int) -> int:
         return default
 
 
-def _deep_copy(value: dict[str, Any]) -> dict[str, Any]:
+def _deep_copy(value: Any) -> Any:
     return json.loads(json.dumps(value))

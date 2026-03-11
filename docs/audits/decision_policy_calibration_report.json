@@ -1,0 +1,173 @@
+{
+  "generated_at": "2026-03-11T13:22:00.578563+00:00",
+  "history_file": "docs/audits/proposal_decision_history.jsonl",
+  "history_records": 23,
+  "min_samples_per_segment": 5,
+  "policy_version_before": "1.1.0",
+  "policy_version_recommended": "1.1.1",
+  "used_any_history": true,
+  "applied": true,
+  "segments": {
+    "frontend": {
+      "samples": 5,
+      "used_history": true,
+      "reason": "calibrated_from_history",
+      "before": {
+        "go_min_score": 0.76,
+        "go_with_caveats_min_score": 0.5,
+        "go_max_ambiguity_score": 0.42,
+        "go_max_open_gaps": 2,
+        "no_go_max_score": 0.38,
+        "no_go_min_open_gaps": 6,
+        "no_go_min_ambiguity_score": 0.85
+      },
+      "after": {
+        "go_min_score": 0.74,
+        "go_with_caveats_min_score": 0.58,
+        "go_max_ambiguity_score": 0.57,
+        "go_max_open_gaps": 3,
+        "no_go_max_score": 0.46,
+        "no_go_min_open_gaps": 4,
+        "no_go_min_ambiguity_score": 0.75
+      }
+    },
+    "backend": {
+      "samples": 5,
+      "used_history": true,
+      "reason": "calibrated_from_history",
+      "before": {
+        "go_min_score": 0.8,
+        "go_with_caveats_min_score": 0.54,
+        "go_max_ambiguity_score": 0.4,
+        "go_max_open_gaps": 2,
+        "no_go_max_score": 0.4,
+        "no_go_min_open_gaps": 6,
+        "no_go_min_ambiguity_score": 0.84
+      },
+      "after": {
+        "go_min_score": 0.73,
+        "go_with_caveats_min_score": 0.62,
+        "go_max_ambiguity_score": 0.55,
+        "go_max_open_gaps": 4,
+        "no_go_max_score": 0.48,
+        "no_go_min_open_gaps": 5,
+        "no_go_min_ambiguity_score": 0.75
+      }
+    },
+    "automacao": {
+      "samples": 5,
+      "used_history": true,
+      "reason": "calibrated_from_history",
+      "before": {
+        "go_min_score": 0.74,
+        "go_with_caveats_min_score": 0.5,
+        "go_max_ambiguity_score": 0.48,
+        "go_max_open_gaps": 3,
+        "no_go_max_score": 0.36,
+        "no_go_min_open_gaps": 7,
+        "no_go_min_ambiguity_score": 0.86
+      },
+      "after": {
+        "go_min_score": 0.67,
+        "go_with_caveats_min_score": 0.58,
+        "go_max_ambiguity_score": 0.63,
+        "go_max_open_gaps": 4,
+        "no_go_max_score": 0.44,
+        "no_go_min_open_gaps": 5,
+        "no_go_min_ambiguity_score": 0.75
+      }
+    },
+    "fullstack": {
+      "samples": 8,
+      "used_history": true,
+      "reason": "calibrated_from_history",
+      "before": {
+        "go_min_score": 0.79,
+        "go_with_caveats_min_score": 0.53,
+        "go_max_ambiguity_score": 0.44,
+        "go_max_open_gaps": 2,
+        "no_go_max_score": 0.39,
+        "no_go_min_open_gaps": 7,
+        "no_go_min_ambiguity_score": 0.87
+      },
+      "after": {
+        "go_min_score": 0.71,
+        "go_with_caveats_min_score": 0.61,
+        "go_max_ambiguity_score": 0.59,
+        "go_max_open_gaps": 4,
+        "no_go_max_score": 0.47,
+        "no_go_min_open_gaps": 5,
+        "no_go_min_ambiguity_score": 0.72
+      }
+    }
+  },
+  "recommended_policy": {
+    "version": "1.1.1",
+    "thresholds": {
+      "go_min_score": 0.78,
+      "go_with_caveats_min_score": 0.52,
+      "go_max_ambiguity_score": 0.45,
+      "go_max_open_gaps": 2,
+      "no_go_max_score": 0.4,
+      "no_go_min_open_gaps": 7,
+      "no_go_min_ambiguity_score": 0.88
+    },
+    "labels": {
+      "go": "GO",
+      "go_with_caveats": "GO_COM_RESSALVAS",
+      "no_go": "NO_GO"
+    },
+    "segment_thresholds": {
+      "frontend": {
+        "thresholds": {
+          "go_min_score": 0.74,
+          "go_with_caveats_min_score": 0.58,
+          "go_max_ambiguity_score": 0.57,
+          "go_max_open_gaps": 3,
+          "no_go_max_score": 0.46,
+          "no_go_min_open_gaps": 4,
+          "no_go_min_ambiguity_score": 0.75
+        }
+      },
+      "backend": {
+        "thresholds": {
+          "go_min_score": 0.73,
+          "go_with_caveats_min_score": 0.62,
+          "go_max_ambiguity_score": 0.55,
+          "go_max_open_gaps": 4,
+          "no_go_max_score": 0.48,
+          "no_go_min_open_gaps": 5,
+          "no_go_min_ambiguity_score": 0.75
+        }
+      },
+      "automacao": {
+        "thresholds": {
+          "go_min_score": 0.67,
+          "go_with_caveats_min_score": 0.58,
+          "go_max_ambiguity_score": 0.63,
+          "go_max_open_gaps": 4,
+          "no_go_max_score": 0.44,
+          "no_go_min_open_gaps": 5,
+          "no_go_min_ambiguity_score": 0.75
+        }
+      },
+      "fullstack": {
+        "thresholds": {
+          "go_min_score": 0.71,
+          "go_with_caveats_min_score": 0.61,
+          "go_max_ambiguity_score": 0.59,
+          "go_max_open_gaps": 4,
+          "no_go_max_score": 0.47,
+          "no_go_min_open_gaps": 5,
+          "no_go_min_ambiguity_score": 0.72
+        }
+      }
+    },
+    "calibration": {
+      "min_samples_per_segment": 5,
+      "history_file": "docs/audits/proposal_decision_history.jsonl",
+      "last_calibrated_at": "2026-03-11T13:22:00.577668+00:00"
+    },
+    "source": "config"
+  }
+}

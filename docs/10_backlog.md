@@ -103,5 +103,6 @@
   - etapa 14: validar fluxo com proposta piloto realista e calibrar duracao/roadmap por proposta
   - etapa 15: endurecer tratamento de proposta vaga com discovery guiada e gate pre-kickoff
   - etapa 16: versionar thresholds comerciais de decisao e aplicar policy no Idea Validator
+  - etapa 17: calibrar thresholds por segmento com historico real de decisoes
 - Proxima etapa:
-  - etapa 17: calibrar thresholds por segmento (frontend/backend/automacao/fullstack) com dados reais
+  - etapa 18: ajustar algoritmo de calibracao com janelas temporais e minimo de variancia por segmento

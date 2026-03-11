@@ -278,3 +278,32 @@
   - `npm run quality:python` -> `ok: true`
   - `npm.cmd run runtime:check` -> `ok: true`
   - `npm.cmd run audit:safety` -> `ok: true`
+
+### Etapa 17 - Calibracao de thresholds por segmento com historico real
+
+- Mudanca:
+  - novo modulo `src/ai_engineering_os/decision_calibration.py`.
+  - novo comando operacional: `npm run policy:calibrate`.
+  - `IdeaValidator` agora registra historico em `docs/audits/proposal_decision_history.jsonl`.
+  - policy ampliada para `segment_thresholds` em `config/decision_policy.json`.
+  - quality gate reforcado para validar schema segmentado da policy.
+- Dados usados na calibracao:
+  - historico consolidado: `23` decisoes
+  - segmentos com amostra valida:
+    - frontend: `5`
+    - backend: `5`
+    - automacao: `5`
+    - fullstack: `8`
+  - relatorio: `docs/audits/decision_policy_calibration_report.json`
+- Resultado:
+  - policy atualizada para versao `1.1.1`.
+  - `last_calibrated_at` preenchido em `config/decision_policy.json`.
+- Cobertura adicionada:
+  - `tests/unit/test_decision_calibration.py`
+  - `tests/unit/test_decision_policy.py` (segment thresholds)
+  - `tests/unit/test_quality_gate.py` (schema segmentado da policy)
+- Validacao da etapa:
+  - `npm run test:python` -> `45 passed`
+  - `npm run quality:python` -> `ok: true`
+  - `npm.cmd run runtime:check` -> `ok: true`
+  - `npm.cmd run audit:safety` -> `ok: true`

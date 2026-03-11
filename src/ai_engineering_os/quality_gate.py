@@ -186,7 +186,7 @@ def _read_decision_policy_config(path: Path) -> dict[str, Any]:
         "missing_keys": [],
     }
     if not path.exists():
-        result["missing_keys"] = ["version", "thresholds", "labels"]
+        result["missing_keys"] = ["version", "thresholds", "labels", "segment_thresholds", "calibration"]
         result["error"] = "decision_policy_missing"
         return result
 
@@ -231,6 +231,35 @@ def _read_decision_policy_config(path: Path) -> dict[str, Any]:
             value = labels.get(key)
             if not isinstance(value, str) or not value.strip():
                 missing.append(f"labels.{key}")
+
+    segment_thresholds = payload.get("segment_thresholds")
+    required_segments = ["frontend", "backend", "automacao", "fullstack"]
+    if not isinstance(segment_thresholds, dict):
+        missing.append("segment_thresholds")
+    else:
+        for segment in required_segments:
+            segment_payload = segment_thresholds.get(segment)
+            if not isinstance(segment_payload, dict):
+                missing.append(f"segment_thresholds.{segment}")
+                continue
+            segment_threshold_values = segment_payload.get("thresholds", segment_payload)
+            if not isinstance(segment_threshold_values, dict):
+                missing.append(f"segment_thresholds.{segment}.thresholds")
+                continue
+            for key in required_thresholds:
+                if key not in segment_threshold_values:
+                    missing.append(f"segment_thresholds.{segment}.thresholds.{key}")
+
+    calibration = payload.get("calibration")
+    if not isinstance(calibration, dict):
+        missing.append("calibration")
+    else:
+        min_samples = calibration.get("min_samples_per_segment")
+        history_file = calibration.get("history_file")
+        if min_samples is None:
+            missing.append("calibration.min_samples_per_segment")
+        if not isinstance(history_file, str) or not history_file.strip():
+            missing.append("calibration.history_file")
 
     result["missing_keys"] = missing
     result["configured"] = not missing

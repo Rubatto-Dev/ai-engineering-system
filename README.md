@@ -34,12 +34,14 @@ Sistema de engenharia assistida por IA orientado por agentes, com protocolo Jarv
    - `npm run quality:python`
    - `npm run runtime:check`
    - `npm run audit:safety`
+   - `npm run policy:calibrate`
 
 Saidas principais geradas para avaliacao inicial:
 - `docs/26_proposta_avaliacao.md` (valor, viabilidade, estimativa, stack, riscos e gaps)
 - `docs/27_descoberta_guiada.md` (perguntas priorizadas e plano de discovery para propostas vagas)
 - `docs/28_validacao_pre_kickoff.md` (gate final de prontidao antes de iniciar implementacao)
 - `docs/31_politica_decisao_comercial.md` (thresholds versionados para GO/GO_COM_RESSALVAS/NO_GO)
+- `docs/audits/decision_policy_calibration_report.json` (calibracao por segmento com historico real)
 - `docs/01_visao.md`, `docs/02_requisitos.md`, `docs/05_arquitetura.md`, `docs/10_backlog.md`
 
 ## Checks operacionais rapidos
