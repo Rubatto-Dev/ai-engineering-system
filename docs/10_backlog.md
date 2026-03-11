@@ -97,5 +97,6 @@
   - etapa 8: publicar checklist de revisao e criterio de merge do PR
   - etapa 9: consolidar plano de risco e rollback para merge seguro
   - etapa 10: emitir recomendacao final de merge com evidencias de gate
+  - etapa 11: merge no main e registro de release notes finais
 - Proxima etapa:
-  - etapa 11: executar merge no PR e registrar release notes finais
+  - etapa 12: monitoramento pos-merge e encerramento operacional da entrega

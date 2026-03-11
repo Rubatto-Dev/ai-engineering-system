@@ -171,3 +171,14 @@
   - `npm run quality:python` -> `ok: true`
   - `npm run runtime:check` -> `ok: true`
   - `npm run audit:safety` -> `ok: true`
+
+### Etapa 11 - Merge no main e release final
+
+- Mudanca:
+  - branch `main` atualizada com merge da consolidacao da Fase 2
+  - release notes atualizados em `docs/16_release_notes.md` (Release 0.3.0)
+- Validacao da etapa:
+  - `npm run test:python` -> `28 passed`
+  - `npm run quality:python` -> `ok: true`
+  - `npm run runtime:check` -> `ok: true`
+  - `npm run audit:safety` -> `ok: true`

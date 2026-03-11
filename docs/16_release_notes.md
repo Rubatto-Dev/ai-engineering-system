@@ -6,3 +6,9 @@ Gerado e atualizado automaticamente pelo pipeline.
 - Ship gate passed
 - SonarQube: ok
 - Security checks: ok
+
+## Release 0.3.0 - 2026-03-11
+- Fase 1 consolidada e encerrada
+- Fase 2 hardening consolidada (runtime, contratos, auditoria estrita)
+- Release safety audit com `ok: true`
+- PR de consolidacao integrado no `main`
