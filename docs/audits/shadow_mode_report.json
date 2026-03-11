@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-03-11T14:36:26.199936+00:00",
+  "winner": "tie",
+  "score_delta": 0.0,
+  "decision_changed": false,
+  "primary": {
+    "profile": "primary",
+    "mode": "autopilot_safe",
+    "decision": "GO",
+    "score_global": 0.9667,
+    "metrics": {
+      "execution_success": 1.0,
+      "stage_validation": 1.0,
+      "handoff_quality": 1.0,
+      "audit_success": 1.0,
+      "artifact_coverage": 0.6667
+    }
+  },
+  "shadow": {
+    "profile": "shadow_autopilot_full",
+    "mode": "autopilot_full",
+    "decision": "GO",
+    "score_global": 0.9667,
+    "metrics": {
+      "execution_success": 1.0,
+      "stage_validation": 1.0,
+      "handoff_quality": 1.0,
+      "audit_success": 1.0,
+      "artifact_coverage": 0.6667
+    }
+  }
+}

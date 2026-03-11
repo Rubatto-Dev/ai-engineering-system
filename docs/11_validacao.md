@@ -349,3 +349,32 @@
 - Validacao da etapa:
   - `npm run test:python` -> `51 passed`
   - `npm run quality:python` -> `ok: true`
+
+### Etapa 20 - Leaderboard automatizado e shadow mode continuo
+
+- Mudanca:
+  - novo modulo `src/ai_engineering_os/agent_training.py` para:
+    - score global por execucao
+    - historico de score em JSONL
+    - leaderboard por janela temporal
+    - comparacao primary vs shadow
+  - novo config `config/agent_training.json`.
+  - novo comando `npm run agents:leaderboard`.
+  - `scripts/run_pipeline.py` reforcado com:
+    - `--shadow`
+    - `--shadow-mode`
+    - `--shadow-profile`
+    - registro automatico de score e relatorios de leaderboard/shadow.
+  - quality gate reforcado com `agent_training_configured`.
+- Artefatos gerados:
+  - `docs/audits/agent_score_history.jsonl`
+  - `docs/audits/agent_leaderboard.json`
+  - `docs/audits/shadow_mode_report.json`
+- Cobertura adicionada:
+  - `tests/unit/test_agent_training.py`
+  - `tests/unit/test_quality_gate.py` (falha sem `config/agent_training.json`)
+- Validacao da etapa:
+  - `npm run test:python` -> `57 passed`
+  - `npm run quality:python` -> `ok: true`
+  - `npm.cmd run runtime:check` -> `ok: true`
+  - `npm.cmd run audit:safety` -> `ok: true`

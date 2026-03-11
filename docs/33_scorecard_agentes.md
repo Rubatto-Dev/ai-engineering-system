@@ -41,3 +41,5 @@ Cada `score_i` deve ser normalizado em faixa `0.0-1.0`.
 - Historico de decisoes: `docs/audits/proposal_decision_history.jsonl`
 - Relatorio de calibracao: `docs/audits/decision_policy_calibration_report.json`
 - Resultado de gate: `npm run quality:python`
+- Leaderboard atualizado: `npm run agents:leaderboard`
+- Historico de score: `docs/audits/agent_score_history.jsonl`

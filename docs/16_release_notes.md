@@ -60,3 +60,13 @@ Gerado e atualizado automaticamente pelo pipeline.
 - Nova policy `config/stage_validation.json` validada pelo quality gate
 - Programa de treinamento oficial e scorecard adicionados (`docs/32` e `docs/33`)
 - Suite de testes expandida para 51 testes
+
+## Release 0.3.8 - 2026-03-11
+- Leaderboard automatizado de perfis de agentes com score operacional
+- Shadow mode continuo no `scripts/run_pipeline.py` (`--shadow`)
+- Nova policy `config/agent_training.json` validada pelo quality gate
+- Novos artefatos operacionais:
+  - `docs/audits/agent_score_history.jsonl`
+  - `docs/audits/agent_leaderboard.json`
+  - `docs/audits/shadow_mode_report.json`
+- Suite de testes expandida para 57 testes

@@ -204,6 +204,28 @@
 - Proxima etapa recomendada:
   - implementar leaderboard automatizado do scorecard e rodada continua em shadow mode.
 
+## Atualizacao Fase 3 - Etapa 20 (2026-03-11)
+
+- Objetivo da etapa:
+  - colocar o treinamento em operacao continua com ranking objetivo e execucao shadow.
+- Entregas:
+  - novo modulo: `src/ai_engineering_os/agent_training.py`.
+  - novo config: `config/agent_training.json`.
+  - novo comando: `npm run agents:leaderboard`.
+  - `scripts/run_pipeline.py` com `--shadow`, `--shadow-mode` e `--shadow-profile`.
+  - quality gate com novo check `agent_training_configured`.
+  - relatorios operacionais:
+    - `docs/audits/agent_score_history.jsonl`
+    - `docs/audits/agent_leaderboard.json`
+    - `docs/audits/shadow_mode_report.json`
+- Validacao:
+  - `test:python` -> `57 passed`
+  - `quality:python` -> `ok: true`
+  - `runtime:check` -> `ok: true`
+  - `audit:safety` -> `ok: true`
+- Proxima etapa recomendada:
+  - preparar baseline cross-platform para migracao Linux sem friccao.
+
 ## Como retomar rapido no Codex
 
 1. Abrir terminal na pasta:

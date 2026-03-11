@@ -33,6 +33,8 @@ Treinar e selecionar um time de agentes capaz de transformar propostas vagas de 
 - Executar agente campeao em paralelo ao fluxo oficial.
 - Comparar diferencas de decisao e cobertura de documentacao.
 - Liberar para producao somente apos estabilidade em 3 ciclos.
+- Comando operacional:
+  - `python scripts/run_pipeline.py --project <name> --cycle 1 --mode autopilot_safe --proposal-file <path> --strict-external --shadow`
 
 ### Fase T4 - Calibracao continua
 - Atualizar thresholds comerciais com `npm run policy:calibrate`.

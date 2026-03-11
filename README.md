@@ -35,6 +35,7 @@ Sistema de engenharia assistida por IA orientado por agentes, com protocolo Jarv
    - `npm run runtime:check`
    - `npm run audit:safety`
    - `npm run policy:calibrate`
+   - `npm run agents:leaderboard`
 
 Saidas principais geradas para avaliacao inicial:
 - `docs/26_proposta_avaliacao.md` (valor, viabilidade, estimativa, stack, riscos e gaps)
@@ -52,6 +53,16 @@ Saidas principais geradas para avaliacao inicial:
 - Toda etapa deve fechar com `checks.stage_validation_ok=true`.
 - Sem validacao completa, o pipeline para imediatamente.
 - Policy obrigatoria em `config/stage_validation.json`.
+
+## Leaderboard e Shadow Mode
+
+- Config central: `config/agent_training.json`.
+- Runner com shadow mode:
+  - `python scripts/run_pipeline.py --project acme --cycle 1 --mode autopilot_safe --proposal-file proposals/cliente_acme.md --strict-external --shadow`
+- Relatorios gerados:
+  - `docs/audits/agent_score_history.jsonl`
+  - `docs/audits/agent_leaderboard.json`
+  - `docs/audits/shadow_mode_report.json`
 
 ## Checks operacionais rapidos
 

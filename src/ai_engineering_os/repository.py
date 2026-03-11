@@ -198,6 +198,43 @@ def ensure_structure(repo_root: Path) -> None:
             encoding="utf-8",
         )
 
+    agent_training_policy_path = repo_root / "config" / "agent_training.json"
+    if not agent_training_policy_path.exists():
+        agent_training_policy_path.write_text(
+            json.dumps(
+                {
+                    "version": "1.0.0",
+                    "history_file": "docs/audits/agent_score_history.jsonl",
+                    "leaderboard_file": "docs/audits/agent_leaderboard.json",
+                    "shadow_report_file": "docs/audits/shadow_mode_report.json",
+                    "weights": {
+                        "execution_success": 0.30,
+                        "stage_validation": 0.25,
+                        "handoff_quality": 0.20,
+                        "audit_success": 0.15,
+                        "artifact_coverage": 0.10,
+                    },
+                    "thresholds": {
+                        "promotion_score": 0.90,
+                        "watch_score": 0.85,
+                        "min_runs_for_promotion": 3,
+                    },
+                    "leaderboard": {
+                        "window_days": 30,
+                        "min_runs": 2,
+                    },
+                    "shadow_mode": {
+                        "enabled": True,
+                        "mode": "autopilot_full",
+                        "profile": "shadow_autopilot_full",
+                    },
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
     sonar_path = repo_root / "sonar-project.properties"
     if not sonar_path.exists():
         sonar_path.write_text(

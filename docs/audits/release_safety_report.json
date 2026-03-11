@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-11T14:16:20.767352+00:00",
+  "generated_at": "2026-03-11T14:40:54.570397+00:00",
   "repo_root": "C:\\Users\\Guilherme - Hogar\\Desktop\\agents\\ai-engineering-system",
   "ok": true,
   "checks": {
@@ -18,7 +18,7 @@
         "-q"
       ],
       "exit_code": 0,
-      "stdout_tail": "...................................................                      [100%]",
+      "stdout_tail": ".........................................................                [100%]",
       "stderr_tail": ""
     },
     "quality": {
@@ -35,7 +35,8 @@
         "sonarqube_configured": true,
         "decision_policy_configured": true,
         "stage_validation_policy_configured": true,
-        "communication_protocol_configured": true
+        "communication_protocol_configured": true,
+        "agent_training_configured": true
       },
       "tooling": {
         "mcp": {
@@ -70,6 +71,11 @@
           "configured": true,
           "missing_sections": [],
           "missing_terms": []
+        },
+        "agent_training": {
+          "file_present": true,
+          "configured": true,
+          "missing_keys": []
         }
       }
     },
@@ -131,10 +137,10 @@
             "npx.cmd",
             "@upstash/context7-mcp"
           ],
-          "mode": "running_after_timeout",
-          "exit_code": null,
+          "mode": "exited",
+          "exit_code": 0,
           "stdout": "",
-          "stderr": ""
+          "stderr": "Context7 Documentation MCP Server v2.1.3 running on stdio\n"
         },
         "sequential_thinking": {
           "ok": true,
@@ -142,10 +148,10 @@
             "npx.cmd",
             "@modelcontextprotocol/server-sequential-thinking"
           ],
-          "mode": "running_after_timeout",
-          "exit_code": null,
+          "mode": "exited",
+          "exit_code": 0,
           "stdout": "",
-          "stderr": ""
+          "stderr": "Sequential Thinking MCP Server running on stdio\n"
         },
         "sonarqube": {
           "ok": true,
@@ -173,6 +179,7 @@
           "decision_policy_configured": true,
           "stage_validation_policy_configured": true,
           "communication_protocol_configured": true,
+          "agent_training_configured": true,
           "external_runtime_ok": true
         },
         "tooling": {
@@ -208,6 +215,11 @@
             "configured": true,
             "missing_sections": [],
             "missing_terms": []
+          },
+          "agent_training": {
+            "file_present": true,
+            "configured": true,
+            "missing_keys": []
           }
         }
       },
@@ -275,10 +287,10 @@
               "npx.cmd",
               "@upstash/context7-mcp"
             ],
-            "mode": "running_after_timeout",
-            "exit_code": null,
+            "mode": "exited",
+            "exit_code": 0,
             "stdout": "",
-            "stderr": ""
+            "stderr": "Context7 Documentation MCP Server v2.1.3 running on stdio\n"
           },
           "sequential_thinking": {
             "ok": true,
@@ -286,10 +298,10 @@
               "npx.cmd",
               "@modelcontextprotocol/server-sequential-thinking"
             ],
-            "mode": "running_after_timeout",
-            "exit_code": null,
+            "mode": "exited",
+            "exit_code": 0,
             "stdout": "",
-            "stderr": ""
+            "stderr": "Sequential Thinking MCP Server running on stdio\n"
           },
           "sonarqube": {
             "ok": true,

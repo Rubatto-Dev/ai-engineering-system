@@ -17,6 +17,7 @@
     "runtime:check": "scripts\\run_runtime_check.cmd",
     "audit:safety": "scripts\\run_release_safety_audit.cmd",
     "policy:calibrate": "scripts\\run_decision_policy_calibration.cmd --write-policy",
+    "agents:leaderboard": "scripts\\run_agent_leaderboard.cmd",
     "sonar:up": "scripts\\start_sonarqube.cmd",
     "sonar:down": "scripts\\stop_sonarqube.cmd"
   },

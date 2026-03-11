@@ -17,6 +17,7 @@ def test_quality_gate_passes_with_default_structure(tmp_path: Path) -> None:
     assert gate["checks"]["sonarqube_configured"] is True
     assert gate["checks"]["stage_validation_policy_configured"] is True
     assert gate["checks"]["communication_protocol_configured"] is True
+    assert gate["checks"]["agent_training_configured"] is True
 
 
 @pytest.mark.unit
@@ -85,3 +86,14 @@ def test_quality_gate_fails_when_communication_protocol_is_missing(tmp_path: Pat
 
     assert gate["ok"] is False
     assert gate["checks"]["communication_protocol_configured"] is False
+
+
+@pytest.mark.unit
+def test_quality_gate_fails_when_agent_training_policy_is_missing(tmp_path: Path) -> None:
+    ensure_structure(tmp_path)
+    (tmp_path / "config" / "agent_training.json").unlink()
+
+    gate = evaluate_quality_gate(tmp_path)
+
+    assert gate["ok"] is False
+    assert gate["checks"]["agent_training_configured"] is False

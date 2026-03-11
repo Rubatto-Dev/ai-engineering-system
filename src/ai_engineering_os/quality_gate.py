@@ -35,6 +35,7 @@ def evaluate_quality_gate(
         "decision_policy_configured": tooling["decision_policy_ready"],
         "stage_validation_policy_configured": tooling["stage_validation_policy_ready"],
         "communication_protocol_configured": tooling["communication_protocol_ready"],
+        "agent_training_configured": tooling["agent_training_ready"],
     }
     overall = all(checks.values())
     return {
@@ -51,6 +52,7 @@ def evaluate_tooling_setup(repo_root: Path) -> dict[str, Any]:
     decision_policy_status = _read_decision_policy_config(repo_root / "config" / "decision_policy.json")
     stage_validation_policy_status = _read_stage_validation_policy(repo_root / "config" / "stage_validation.json")
     communication_protocol_status = _read_communication_protocol(repo_root / "protocol" / "AGENT_COMMUNICATION_PROTOCOL.md")
+    agent_training_status = _read_agent_training_config(repo_root / "config" / "agent_training.json")
 
     context7_ready = mcp_status["context7_server_ready"] and policy_status["context7_enabled"]
     sequential_ready = mcp_status["sequential_server_ready"] and policy_status["sequential_thinking_enabled"]
@@ -59,6 +61,7 @@ def evaluate_tooling_setup(repo_root: Path) -> dict[str, Any]:
     decision_policy_ready = decision_policy_status["configured"]
     stage_validation_policy_ready = stage_validation_policy_status["configured"]
     communication_protocol_ready = communication_protocol_status["configured"]
+    agent_training_ready = agent_training_status["configured"]
 
     return {
         "context7_ready": context7_ready,
@@ -68,6 +71,7 @@ def evaluate_tooling_setup(repo_root: Path) -> dict[str, Any]:
         "decision_policy_ready": decision_policy_ready,
         "stage_validation_policy_ready": stage_validation_policy_ready,
         "communication_protocol_ready": communication_protocol_ready,
+        "agent_training_ready": agent_training_ready,
         "details": {
             "mcp": mcp_status,
             "tooling_policy": policy_status,
@@ -75,6 +79,7 @@ def evaluate_tooling_setup(repo_root: Path) -> dict[str, Any]:
             "decision_policy": decision_policy_status,
             "stage_validation_policy": stage_validation_policy_status,
             "communication_protocol": communication_protocol_status,
+            "agent_training": agent_training_status,
         },
     }
 
@@ -362,4 +367,82 @@ def _read_communication_protocol(path: Path) -> dict[str, Any]:
     result["missing_sections"] = missing_sections
     result["missing_terms"] = missing_terms
     result["configured"] = not missing_sections and not missing_terms
+    return result
+
+
+def _read_agent_training_config(path: Path) -> dict[str, Any]:
+    result = {
+        "file_present": path.exists(),
+        "configured": False,
+        "missing_keys": [],
+    }
+    if not path.exists():
+        result["missing_keys"] = [
+            "version",
+            "history_file",
+            "leaderboard_file",
+            "weights",
+            "thresholds",
+            "leaderboard",
+            "shadow_mode",
+        ]
+        result["error"] = "agent_training_policy_missing"
+        return result
+
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except json.JSONDecodeError:
+        result["error"] = "agent_training_policy_json_invalid"
+        return result
+
+    if not isinstance(payload, dict):
+        result["error"] = "agent_training_policy_invalid_shape"
+        return result
+
+    missing: list[str] = []
+    version = payload.get("version")
+    if not isinstance(version, str) or not version.strip():
+        missing.append("version")
+
+    for key in ["history_file", "leaderboard_file", "shadow_report_file"]:
+        value = payload.get(key)
+        if key == "shadow_report_file" and value is None:
+            continue
+        if not isinstance(value, str) or not value.strip():
+            missing.append(key)
+
+    weights = payload.get("weights")
+    if not isinstance(weights, dict):
+        missing.append("weights")
+    else:
+        for key in ["execution_success", "stage_validation", "handoff_quality", "audit_success", "artifact_coverage"]:
+            if key not in weights:
+                missing.append(f"weights.{key}")
+
+    thresholds = payload.get("thresholds")
+    if not isinstance(thresholds, dict):
+        missing.append("thresholds")
+    else:
+        for key in ["promotion_score", "watch_score", "min_runs_for_promotion"]:
+            if key not in thresholds:
+                missing.append(f"thresholds.{key}")
+
+    leaderboard = payload.get("leaderboard")
+    if not isinstance(leaderboard, dict):
+        missing.append("leaderboard")
+    else:
+        for key in ["window_days", "min_runs"]:
+            if key not in leaderboard:
+                missing.append(f"leaderboard.{key}")
+
+    shadow_mode = payload.get("shadow_mode")
+    if not isinstance(shadow_mode, dict):
+        missing.append("shadow_mode")
+    else:
+        for key in ["enabled", "mode", "profile"]:
+            if key not in shadow_mode:
+                missing.append(f"shadow_mode.{key}")
+
+    result["missing_keys"] = missing
+    result["configured"] = not missing
     return result

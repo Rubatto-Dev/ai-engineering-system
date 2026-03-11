@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-03-11T14:41:23.389103+00:00",
+  "window_days": 30,
+  "records_total": 5,
+  "records_in_window": 5,
+  "min_runs": 2,
+  "promotion_score": 0.9,
+  "watch_score": 0.85,
+  "top_profile": "shadow_autopilot_full",
+  "profiles": [
+    {
+      "profile": "shadow_autopilot_full",
+      "runs": 2,
+      "avg_score": 0.9334,
+      "max_score": 0.9667,
+      "min_score": 0.9,
+      "execution_success_rate": 1.0,
+      "audit_success_rate": 1.0,
+      "stage_validation_rate": 1.0,
+      "handoff_quality_rate": 1.0,
+      "artifact_coverage_rate": 0.3333,
+      "decision_distribution": {
+        "GO": 2
+      },
+      "eligible_for_promotion": true,
+      "recommended_action": "promote"
+    },
+    {
+      "profile": "primary",
+      "runs": 3,
+      "avg_score": 0.9222,
+      "max_score": 0.9667,
+      "min_score": 0.9,
+      "execution_success_rate": 1.0,
+      "audit_success_rate": 1.0,
+      "stage_validation_rate": 1.0,
+      "handoff_quality_rate": 1.0,
+      "artifact_coverage_rate": 0.2222,
+      "decision_distribution": {
+        "GO": 3
+      },
+      "eligible_for_promotion": true,
+      "recommended_action": "promote"
+    }
+  ]
+}

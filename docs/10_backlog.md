@@ -106,5 +106,6 @@
   - etapa 17: calibrar thresholds por segmento com historico real de decisoes
   - etapa 18: refinar calibracao com janela temporal e regra de variancia minima por segmento
   - etapa 19: bloquear pipeline sem validacao completa por etapa e formalizar programa de treinamento de agentes
-- Proxima etapa:
   - etapa 20: operacionalizar leaderboard automatizado para scorecard e shadow mode continuo
+- Proxima etapa:
+  - etapa 21: preparar baseline cross-platform (Linux-ready) para scripts operacionais

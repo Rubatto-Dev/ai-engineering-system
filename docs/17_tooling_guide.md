@@ -58,6 +58,8 @@
   - `JARVIS: EXEC cycle=1 mode=autopilot_safe`
 - Optional one-shot pipeline command:
   - `python scripts/run_pipeline.py --project <name> --cycle 1 --mode autopilot_safe --proposal-file proposals/cliente_x.md --strict-external`
+  - with challenger in shadow mode:
+    - `python scripts/run_pipeline.py --project <name> --cycle 1 --mode autopilot_safe --proposal-file proposals/cliente_x.md --strict-external --shadow`
 - Core output:
   - `docs/26_proposta_avaliacao.md`
   - `docs/27_descoberta_guiada.md`
@@ -67,6 +69,9 @@
   - `docs/33_scorecard_agentes.md`
   - `docs/audits/proposal_decision_history.jsonl`
   - `docs/audits/decision_policy_calibration_report.json`
+  - `docs/audits/agent_score_history.jsonl`
+  - `docs/audits/agent_leaderboard.json`
+  - `docs/audits/shadow_mode_report.json`
 
 ## Stage Validation Policy
 
@@ -77,3 +82,11 @@
   - missing contract/notes/artifacts blocks pipeline
 - Validate policy and protocol with:
   - `npm run quality:python`
+
+## Agent Leaderboard
+
+- Build leaderboard manually:
+  - `npm run agents:leaderboard`
+- Config file:
+  - `config/agent_training.json`
+- Promotion/readiness criteria are evaluated from rolling history.
