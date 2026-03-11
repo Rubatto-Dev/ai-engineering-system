@@ -5,7 +5,7 @@ from pathlib import Path
 import re
 from typing import Any
 
-from .repository import required_doc_paths
+from .repository import required_doc_paths, required_template_packet_paths
 
 
 def evaluate_quality_gate(
@@ -37,6 +37,7 @@ def evaluate_quality_gate(
         "communication_protocol_configured": tooling["communication_protocol_ready"],
         "agent_training_configured": tooling["agent_training_ready"],
         "npm_scripts_cross_platform": tooling["npm_scripts_cross_platform_ready"],
+        "client_templates_available": tooling["client_templates_ready"],
     }
     overall = all(checks.values())
     return {
@@ -55,6 +56,7 @@ def evaluate_tooling_setup(repo_root: Path) -> dict[str, Any]:
     communication_protocol_status = _read_communication_protocol(repo_root / "protocol" / "AGENT_COMMUNICATION_PROTOCOL.md")
     agent_training_status = _read_agent_training_config(repo_root / "config" / "agent_training.json")
     npm_scripts_status = _read_npm_scripts_config(repo_root / "package.json")
+    client_templates_status = _read_client_templates(required_template_packet_paths(repo_root))
 
     context7_ready = mcp_status["context7_server_ready"] and policy_status["context7_enabled"]
     sequential_ready = mcp_status["sequential_server_ready"] and policy_status["sequential_thinking_enabled"]
@@ -65,6 +67,7 @@ def evaluate_tooling_setup(repo_root: Path) -> dict[str, Any]:
     communication_protocol_ready = communication_protocol_status["configured"]
     agent_training_ready = agent_training_status["configured"]
     npm_scripts_cross_platform_ready = npm_scripts_status["configured"]
+    client_templates_ready = client_templates_status["configured"]
 
     return {
         "context7_ready": context7_ready,
@@ -76,6 +79,7 @@ def evaluate_tooling_setup(repo_root: Path) -> dict[str, Any]:
         "communication_protocol_ready": communication_protocol_ready,
         "agent_training_ready": agent_training_ready,
         "npm_scripts_cross_platform_ready": npm_scripts_cross_platform_ready,
+        "client_templates_ready": client_templates_ready,
         "details": {
             "mcp": mcp_status,
             "tooling_policy": policy_status,
@@ -85,6 +89,7 @@ def evaluate_tooling_setup(repo_root: Path) -> dict[str, Any]:
             "communication_protocol": communication_protocol_status,
             "agent_training": agent_training_status,
             "npm_scripts": npm_scripts_status,
+            "client_templates": client_templates_status,
         },
     }
 
@@ -468,6 +473,7 @@ def _read_npm_scripts_config(path: Path) -> dict[str, Any]:
             "audit:safety",
             "policy:calibrate",
             "agents:leaderboard",
+            "templates:init",
             "sonar:up",
             "sonar:down",
         ]
@@ -496,6 +502,7 @@ def _read_npm_scripts_config(path: Path) -> dict[str, Any]:
         "audit:safety",
         "policy:calibrate",
         "agents:leaderboard",
+        "templates:init",
         "sonar:up",
         "sonar:down",
     ]
@@ -512,4 +519,27 @@ def _read_npm_scripts_config(path: Path) -> dict[str, Any]:
             non_portable.append(key)
     result["non_portable_scripts"] = non_portable
     result["configured"] = not missing_scripts and not non_portable
+    return result
+
+
+def _read_client_templates(paths: list[Path]) -> dict[str, Any]:
+    result = {
+        "configured": False,
+        "required_count": len(paths),
+        "missing_files": [],
+        "empty_files": [],
+    }
+    missing: list[str] = []
+    empty: list[str] = []
+
+    for path in paths:
+        if not path.exists():
+            missing.append(str(path))
+            continue
+        if not path.read_text(encoding="utf-8-sig").strip():
+            empty.append(str(path))
+
+    result["missing_files"] = missing
+    result["empty_files"] = empty
+    result["configured"] = not missing and not empty
     return result

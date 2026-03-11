@@ -19,6 +19,7 @@ def test_quality_gate_passes_with_default_structure(tmp_path: Path) -> None:
     assert gate["checks"]["communication_protocol_configured"] is True
     assert gate["checks"]["agent_training_configured"] is True
     assert gate["checks"]["npm_scripts_cross_platform"] is True
+    assert gate["checks"]["client_templates_available"] is True
 
 
 @pytest.mark.unit
@@ -112,3 +113,14 @@ def test_quality_gate_fails_when_npm_scripts_are_non_portable(tmp_path: Path) ->
 
     assert gate["ok"] is False
     assert gate["checks"]["npm_scripts_cross_platform"] is False
+
+
+@pytest.mark.unit
+def test_quality_gate_fails_when_client_template_is_missing(tmp_path: Path) -> None:
+    ensure_structure(tmp_path)
+    (tmp_path / "templates" / "client_packet" / "06_checklist_pre_kickoff.md").unlink()
+
+    gate = evaluate_quality_gate(tmp_path)
+
+    assert gate["ok"] is False
+    assert gate["checks"]["client_templates_available"] is False

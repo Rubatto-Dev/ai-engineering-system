@@ -240,6 +240,23 @@
   - `runtime:check` -> `ok: true`
   - `audit:safety` -> `ok: true`
 - Proxima etapa recomendada:
+  - padronizar modelos de intake para reduzir falha de comunicacao com cliente.
+
+## Atualizacao Fase 3 - Etapa 22 (2026-03-11)
+
+- Objetivo da etapa:
+  - padronizar coleta de dados da proposta para eliminar perdas de informacao no handoff com clientes.
+- Entregas:
+  - novo pacote `templates/client_packet` com 7 modelos padrao preenchiveis.
+  - novo modulo `src/ai_engineering_os/template_pack.py`.
+  - novo comando `npm run templates:init` (ou `python scripts/init_client_templates.py`).
+  - quality gate com check `client_templates_available`.
+- Validacao:
+  - `test:python` -> `62 passed`
+  - `quality:python` -> `ok: true`
+  - `npm.cmd run runtime:check` -> `ok: true`
+  - `npm.cmd run audit:safety` -> `ok: true`
+- Proxima etapa recomendada:
   - executar migracao assistida para Linux com backup/restore de volumes e secrets.
 
 ## Como retomar rapido no Codex

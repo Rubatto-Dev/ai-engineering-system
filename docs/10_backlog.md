@@ -108,5 +108,6 @@
   - etapa 19: bloquear pipeline sem validacao completa por etapa e formalizar programa de treinamento de agentes
   - etapa 20: operacionalizar leaderboard automatizado para scorecard e shadow mode continuo
   - etapa 21: baseline cross-platform para operacao Linux-ready
+  - etapa 22: pacote de modelos padrao para intake sem perda de informacao
 - Proxima etapa:
-  - etapa 22: executar migracao assistida para Linux com restore de dados e validacao final
+  - etapa 23: executar migracao assistida para Linux com restore de dados e validacao final

@@ -1,5 +1,7 @@
 # Template de Proposta de Cliente
 
+> Uso rapido: para pacote completo e padronizado, prefira o kit em `templates/client_packet` via `scripts/init_client_templates.py`.
+
 ## 0. Quando o cliente nao sabe exatamente o que quer
 - Descreva o problema atual em 3 frases.
 - Informe o que hoje mais gera retrabalho/perda de tempo.

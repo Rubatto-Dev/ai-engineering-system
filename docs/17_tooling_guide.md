@@ -32,6 +32,7 @@
 ## Runtime Readiness
 
 - Run `npm run runtime:check` to validate Node, npm, MCP runtime startup, and SonarQube API reachability.
+- If PowerShell blocks `npm.ps1`, use `npm.cmd run runtime:check` in the same terminal session.
 - Result is `ok: true` only when all external runtime checks pass.
 
 ## Strict Audit
@@ -42,6 +43,7 @@
 ## Release Safety Audit
 
 - Run `npm run audit:safety` to execute a consolidated release-safety audit.
+- If PowerShell blocks `npm.ps1`, use `npm.cmd run audit:safety`.
 - The command generates `docs/audits/release_safety_report.json`.
 - Release candidate is ready only when report field `ok` is `true`.
 
@@ -96,3 +98,13 @@
 - `package.json` scripts are Linux-ready and Windows-ready.
 - Quality gate enforces portability through:
   - `checks.npm_scripts_cross_platform = true`
+
+## Client Template Pack
+
+- Standard templates are stored in:
+  - `templates/client_packet`
+- Generate a packet for each client/proposal:
+  - `python scripts/init_client_templates.py --client "<client>" --project "<project>" --owner "<owner>"`
+  - `npm run templates:init -- --client "<client>" --project "<project>" --owner "<owner>"`
+- Quality gate enforces template availability through:
+  - `checks.client_templates_available = true`

@@ -396,3 +396,21 @@
   - `npm run quality:python` -> `ok: true`
   - `npm.cmd run runtime:check` -> `ok: true`
   - `npm.cmd run audit:safety` -> `ok: true`
+
+### Etapa 22 - Modelos padrao para intake de cliente
+
+- Mudanca:
+  - pacote de templates versionado em `templates/client_packet/`.
+  - novo comando para gerar kit por cliente/projeto:
+    - `python scripts/init_client_templates.py`
+    - `npm run templates:init -- --client "<client>" --project "<project>" --owner "<owner>"`
+  - novo modulo: `src/ai_engineering_os/template_pack.py`.
+  - quality gate reforcado com check `client_templates_available`.
+- Cobertura adicionada:
+  - `tests/unit/test_template_pack.py`
+  - `tests/unit/test_quality_gate.py` com cenario de template ausente.
+- Validacao da etapa:
+  - `npm run test:python` -> `62 passed`
+  - `npm run quality:python` -> `ok: true`
+  - `npm.cmd run runtime:check` -> `ok: true`
+  - `npm.cmd run audit:safety` -> `ok: true`

@@ -18,6 +18,7 @@
     "audit:safety": "python scripts/release_safety_audit.py",
     "policy:calibrate": "python scripts/decision_policy_calibration.py --write-policy",
     "agents:leaderboard": "python scripts/agent_leaderboard.py",
+    "templates:init": "python scripts/init_client_templates.py",
     "sonar:up": "docker compose --profile tooling up -d sonarqube",
     "sonar:down": "docker compose --profile tooling down"
   },

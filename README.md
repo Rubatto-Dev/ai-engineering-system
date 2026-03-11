@@ -64,6 +64,14 @@ Saidas principais geradas para avaliacao inicial:
   - `docs/audits/agent_leaderboard.json`
   - `docs/audits/shadow_mode_report.json`
 
+## Modelos padrao para clientes
+
+- Kit de templates padronizados em `templates/client_packet/`.
+- Gerar pacote preenchivel por cliente/projeto:
+  - `python scripts/init_client_templates.py --client "Cliente X" --project "Projeto Y" --owner "Seu Nome"`
+  - ou `npm run templates:init -- --client "Cliente X" --project "Projeto Y" --owner "Seu Nome"`
+- Saida gerada em `proposals/packets/<cliente>_<projeto>/`.
+
 ## Checks operacionais rapidos
 
 - `npm run test:python`

@@ -76,3 +76,10 @@ Gerado e atualizado automaticamente pelo pipeline.
 - Novo check de prontidao Linux no quality gate: `npm_scripts_cross_platform`
 - Bootstrap do repositorio agora cria `package.json` portavel quando ausente
 - Suite de testes expandida para 58 testes
+
+## Release 0.4.0 - 2026-03-11
+- Pacote de modelos padrao para propostas em `templates/client_packet`
+- Gerador de kit por cliente/projeto (`scripts/init_client_templates.py`)
+- Novo modulo de orquestracao de templates: `src/ai_engineering_os/template_pack.py`
+- Quality gate validando disponibilidade dos templates (`client_templates_available`)
+- Suite de testes expandida para 62 testes
