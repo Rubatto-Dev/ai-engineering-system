@@ -98,5 +98,6 @@
   - etapa 9: consolidar plano de risco e rollback para merge seguro
   - etapa 10: emitir recomendacao final de merge com evidencias de gate
   - etapa 11: merge no main e registro de release notes finais
-- Proxima etapa:
   - etapa 12: monitoramento pos-merge e encerramento operacional da entrega
+- Proxima etapa:
+  - etapa 13: iniciar Fase 3 (auditoria final e release candidato)

@@ -182,3 +182,17 @@
   - `npm run quality:python` -> `ok: true`
   - `npm run runtime:check` -> `ok: true`
   - `npm run audit:safety` -> `ok: true`
+
+### Etapa 12 - Monitoramento pos-merge e encerramento operacional
+
+- Mudanca:
+  - observabilidade operacional detalhada em `docs/14_observability.md`
+  - fechamento operacional registrado em `docs/25_post_merge_operational_closure.md`
+- Cobertura adicionada:
+  - sinais operacionais e regra de alerta para bloqueio de ship
+  - evidencias de estabilidade pos-merge no `main`
+- Validacao da etapa:
+  - `npm run test:python` -> `28 passed`
+  - `npm run quality:python` -> `ok: true`
+  - `npm run runtime:check` -> `ok: true`
+  - `npm run audit:safety` -> `ok: true`

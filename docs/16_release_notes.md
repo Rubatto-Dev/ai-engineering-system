@@ -12,3 +12,4 @@ Gerado e atualizado automaticamente pelo pipeline.
 - Fase 2 hardening consolidada (runtime, contratos, auditoria estrita)
 - Release safety audit com `ok: true`
 - PR de consolidacao integrado no `main`
+- Monitoramento pos-merge concluido sem incidentes
