@@ -240,3 +240,23 @@
   - `npm run quality:python` -> `ok: true`
   - `npm.cmd run runtime:check` -> `ok: true`
   - `npm.cmd run audit:safety` -> `ok: true`
+
+### Etapa 15 - Propostas vagas com discovery guiada e gate pre-kickoff
+
+- Mudanca:
+  - `src/ai_engineering_os/proposal_profile.py` reforcado com:
+    - `ambiguity_score` e `ambiguity_level`
+    - `discovery_questions` e `validation_checklist`
+    - `kickoff_recommendation` e `scope_lock_ready`
+  - `src/ai_engineering_os/agents/intake.py` agora gera `docs/27_descoberta_guiada.md`.
+  - `src/ai_engineering_os/agents/documentation_qa.py` agora gera `docs/28_validacao_pre_kickoff.md`.
+  - `src/ai_engineering_os/agents/idea_validator.py` e `backlog.py` ajustados para proposta vaga.
+  - `src/ai_engineering_os/repository.py` atualizado para incluir docs 27/28 como documentacao base.
+- Cobertura adicionada:
+  - `tests/unit/test_proposal_profile.py` (cenario de proposta vaga)
+  - `tests/integration/test_pipeline_integration.py` (geracao de docs 27/28 e `kickoff_ready=false`)
+- Validacao da etapa:
+  - `npm run test:python` -> `37 passed`
+  - `npm run quality:python` -> `ok: true`
+  - `npm.cmd run runtime:check` -> `ok: true`
+  - `npm.cmd run audit:safety` -> `ok: true`

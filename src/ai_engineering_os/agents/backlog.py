@@ -18,16 +18,36 @@ class BacklogAgent(BaseAgent):
         if proposal_profile:
             features = proposal_profile.get("key_features", [])
             duration = proposal_profile.get("estimated_duration_weeks", {"avg": 6})
+            missing_info = proposal_profile.get("missing_information", [])
+            ambiguity_level = str(proposal_profile.get("ambiguity_level", "media"))
+            dynamic_items: list[BacklogItem] = []
+            item_idx = 1
+
+            if ambiguity_level == "alta" or (isinstance(missing_info, list) and missing_info):
+                discovery_effort = 4 if ambiguity_level == "alta" else 3
+                dynamic_items.append(
+                    BacklogItem(
+                        item_id=f"BL-{item_idx:03d}",
+                        description="Conduzir discovery guiada e fechar gaps da proposta antes do scope lock",
+                        priority="high",
+                        effort=discovery_effort,
+                        acceptance_criteria=[
+                            "Perguntas prioritarias de discovery respondidas e aprovadas",
+                            "Gaps criticos (prazo, budget, KPI, compliance) fechados ou com plano de mitigacao",
+                        ],
+                    )
+                )
+                item_idx += 1
+
             if isinstance(features, list) and features:
-                dynamic_items: list[BacklogItem] = []
-                for index, feature in enumerate(features[:4], start=1):
-                    item_id = f"BL-{index:03d}"
+                for feature in features[:4]:
+                    item_id = f"BL-{item_idx:03d}"
                     effort = max(2, min(8, int(duration.get("avg", 6) / 2)))
                     dynamic_items.append(
                         BacklogItem(
                             item_id=item_id,
                             description=f"Implement and validate: {feature}",
-                            priority="high" if index <= 2 else "medium",
+                            priority="high" if item_idx <= 2 else "medium",
                             effort=effort,
                             acceptance_criteria=[
                                 f"Feature delivered for proposal objective: {feature}",
@@ -35,20 +55,35 @@ class BacklogAgent(BaseAgent):
                             ],
                         )
                     )
-
+                    item_idx += 1
+            else:
                 dynamic_items.append(
                     BacklogItem(
-                        item_id=f"BL-{len(dynamic_items) + 1:03d}",
-                        description="Run feasibility, quality gate, and runtime validation before execution start",
+                        item_id=f"BL-{item_idx:03d}",
+                        description="Definir e validar backlog MVP quando a proposta nao traz features detalhadas",
                         priority="high",
                         effort=3,
                         acceptance_criteria=[
-                            "test:python, quality:python, runtime:check all successful",
-                            "Proposal evaluation and risk docs approved",
+                            "MVP com ate 5 funcionalidades priorizadas",
+                            "Criterios de aceite definidos com stakeholders",
                         ],
                     )
                 )
-                return dynamic_items
+                item_idx += 1
+
+            dynamic_items.append(
+                BacklogItem(
+                    item_id=f"BL-{item_idx:03d}",
+                    description="Run feasibility, quality gate, and runtime validation before execution start",
+                    priority="high",
+                    effort=3,
+                    acceptance_criteria=[
+                        "test:python, quality:python, runtime:check all successful",
+                        "Proposal evaluation and risk docs approved",
+                    ],
+                )
+            )
+            return dynamic_items
 
         return [
             BacklogItem(

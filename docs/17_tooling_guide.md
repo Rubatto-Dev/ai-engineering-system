@@ -48,6 +48,7 @@
 ## Proposal Intake
 
 - Save the client proposal file in the repository (example: `proposals/cliente_x.md`).
+- If the proposal is vague, the pipeline generates guided discovery and pre-kickoff gates automatically.
 - Start with proposal context:
   - `JARVIS: START project=<name> proposal_file=proposals/cliente_x.md`
 - Run execution cycle to produce proposal assessment:
@@ -56,3 +57,5 @@
   - `python scripts/run_pipeline.py --project <name> --cycle 1 --mode autopilot_safe --proposal-file proposals/cliente_x.md --strict-external`
 - Core output:
   - `docs/26_proposta_avaliacao.md`
+  - `docs/27_descoberta_guiada.md`
+  - `docs/28_validacao_pre_kickoff.md`

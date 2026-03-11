@@ -101,5 +101,6 @@
   - etapa 12: monitoramento pos-merge e encerramento operacional da entrega
   - etapa 13: habilitar fluxo de proposta de cliente para avaliacao e documentacao automatizada
   - etapa 14: validar fluxo com proposta piloto realista e calibrar duracao/roadmap por proposta
+  - etapa 15: endurecer tratamento de proposta vaga com discovery guiada e gate pre-kickoff
 - Proxima etapa:
-  - etapa 15: formalizar criterios de aceite comercial para GO/GO_COM_RESSALVAS/NO_GO
+  - etapa 16: versionar thresholds comerciais de decisao (GO/GO_COM_RESSALVAS/NO_GO)

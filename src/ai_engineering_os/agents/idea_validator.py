@@ -57,6 +57,26 @@ class IdeaValidatorAgent(BaseAgent):
         missing_info = proposal_profile.get("missing_information", [])
         stack = proposal_profile.get("recommended_stack", ["Python 3.11", "Pytest", "SonarQube"])
         features = proposal_profile.get("key_features", [])
+        ambiguity_level = str(proposal_profile.get("ambiguity_level", "media"))
+        ambiguity_score = float(proposal_profile.get("ambiguity_score", 0.55))
+        kickoff_recommendation = str(proposal_profile.get("kickoff_recommendation", "discovery_required"))
+        validation_checklist = proposal_profile.get("validation_checklist", [])
+        discovery_questions = proposal_profile.get("discovery_questions", [])
+        features_lines = [f"- {feature}" for feature in features] if isinstance(features, list) and features else ["- Nao informado"]
+        stack_lines = [f"- {item}" for item in stack] if isinstance(stack, list) and stack else ["- Nao informado"]
+        risks_lines = [f"- {risk}" for risk in risks] if isinstance(risks, list) and risks else ["- Nao informado"]
+        missing_lines = [f"- {gap}" for gap in missing_info] if isinstance(missing_info, list) and missing_info else ["- Nenhuma"]
+        checklist_lines = (
+            [f"- {item}" for item in validation_checklist]
+            if isinstance(validation_checklist, list) and validation_checklist
+            else ["- Checklist pre-kickoff nao informado"]
+        )
+        discovery_lines = (
+            [f"- {item}" for item in discovery_questions[:6]]
+            if isinstance(discovery_questions, list) and discovery_questions
+            else ["- Sem perguntas registradas"]
+        )
+        kickoff_ready = kickoff_recommendation == "ready_for_scope_lock" and outcome["decision"] == "GO"
 
         risks_doc = self._write(
             "docs/09_riscos.md",
@@ -91,26 +111,35 @@ class IdeaValidatorAgent(BaseAgent):
                     f"- decisao: {outcome['decision']}",
                     f"- score: {outcome['score']}",
                     f"- viabilidade: {feasibility}",
+                    f"- ambiguidade: {ambiguity_level} (score {ambiguity_score:.2f})",
                     f"- valor_estimado_score: {proposal_profile.get('value_score', 0.62)}",
                     (
                         f"- duracao_estimada_semanas: {duration.get('min', 4)}-"
                         f"{duration.get('max', 8)} (media {duration.get('avg', 6)})"
                     ),
+                    f"- recommendation: {kickoff_recommendation}",
+                    f"- scope_lock_ready: {kickoff_ready}",
                     "",
                     "## Hipotese de Valor",
                     f"- {value_hypothesis}",
                     "",
                     "## Features Principais",
-                    *[f"- {feature}" for feature in features],
+                    *features_lines,
                     "",
                     "## Stack Recomendada",
-                    *[f"- {item}" for item in stack],
+                    *stack_lines,
                     "",
                     "## Riscos",
-                    *[f"- {risk}" for risk in risks],
+                    *risks_lines,
                     "",
                     "## Informacoes Pendentes",
-                    *[f"- {gap}" for gap in missing_info],
+                    *missing_lines,
+                    "",
+                    "## Perguntas de Discovery",
+                    *discovery_lines,
+                    "",
+                    "## Checklist Pre-Kickoff",
+                    *checklist_lines,
                 ]
             ),
         )
@@ -123,8 +152,17 @@ class IdeaValidatorAgent(BaseAgent):
             status=status,
             artifacts=[risks_doc, proposal_eval_doc],
             notes=f"decision={outcome['decision']} score={outcome['score']}",
-            checks={"decision": outcome["decision"], "proposal_profile_loaded": bool(proposal_profile)},
-            outputs={"idea_decision": outcome["decision"], "idea_score": outcome["score"]},
+            checks={
+                "decision": outcome["decision"],
+                "proposal_profile_loaded": bool(proposal_profile),
+                "kickoff_ready": kickoff_ready,
+            },
+            outputs={
+                "idea_decision": outcome["decision"],
+                "idea_score": outcome["score"],
+                "kickoff_ready": kickoff_ready,
+                "kickoff_recommendation": kickoff_recommendation,
+            },
             handoff="08",
         )
 

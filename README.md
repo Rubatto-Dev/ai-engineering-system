@@ -22,6 +22,7 @@ Sistema de engenharia assistida por IA orientado por agentes, com protocolo Jarv
 
 1. Salvar a proposta em arquivo de texto/markdown no repositorio, por exemplo:
    - `proposals/cliente_acme.md`
+   - se a proposta vier vaga, o sistema gera discovery guiada automaticamente (`docs/27` + `docs/28`)
 2. Iniciar o projeto com a proposta:
    - `JARVIS: START project=acme proposal_file=proposals/cliente_acme.md`
 3. Planejar e executar:
@@ -36,6 +37,8 @@ Sistema de engenharia assistida por IA orientado por agentes, com protocolo Jarv
 
 Saidas principais geradas para avaliacao inicial:
 - `docs/26_proposta_avaliacao.md` (valor, viabilidade, estimativa, stack, riscos e gaps)
+- `docs/27_descoberta_guiada.md` (perguntas priorizadas e plano de discovery para propostas vagas)
+- `docs/28_validacao_pre_kickoff.md` (gate final de prontidao antes de iniciar implementacao)
 - `docs/01_visao.md`, `docs/02_requisitos.md`, `docs/05_arquitetura.md`, `docs/10_backlog.md`
 
 ## Checks operacionais rapidos

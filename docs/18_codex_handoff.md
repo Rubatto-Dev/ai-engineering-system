@@ -102,6 +102,23 @@
 - Proxima etapa recomendada:
   - formalizar criterios comerciais de decisao (`GO`, `GO_COM_RESSALVAS`, `NO_GO`) com thresholds versionados.
 
+## Atualizacao Fase 3 - Etapa 15 (2026-03-11)
+
+- Objetivo da etapa:
+  - tratar melhor propostas vagas de cliente para ainda assim produzir documentacao profissional completa.
+- Entregas:
+  - perfil de proposta com nivel de ambiguidade, perguntas de discovery e checklist de validacao.
+  - novo artefato `docs/27_descoberta_guiada.md` (diagnostico + perguntas priorizadas).
+  - novo artefato `docs/28_validacao_pre_kickoff.md` (gate de prontidao antes de iniciar implementacao).
+  - backlog dinamico priorizando discovery quando ambiguidade esta alta.
+- Validacao:
+  - `test:python` -> `37 passed`
+  - `quality:python` -> `ok: true`
+  - `runtime:check` -> `ok: true`
+  - `audit:safety` -> `ok: true`
+- Proxima etapa recomendada:
+  - versionar thresholds comerciais de decisao por score/ambiguidade/gaps para padronizar aprovacao.
+
 ## Como retomar rapido no Codex
 
 1. Abrir terminal na pasta:

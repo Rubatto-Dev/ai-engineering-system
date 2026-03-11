@@ -57,6 +57,20 @@ _KNOWN_INTEGRATIONS = [
     "google sheets",
 ]
 
+_VAGUE_SIGNALS = [
+    "nao sei",
+    "nao temos certeza",
+    "ideia inicial",
+    "algo simples",
+    "quero um app",
+    "quero um sistema",
+    "preciso de ajuda para definir",
+    "a definir",
+    "to be defined",
+    "not sure",
+    "simple app",
+]
+
 _STACK_BY_TYPE = {
     "frontend": ["TypeScript", "React", "Next.js", "Playwright", "Tailwind CSS"],
     "backend": ["Python 3.11", "FastAPI", "PostgreSQL", "Pytest", "Docker"],
@@ -101,6 +115,10 @@ def build_proposal_profile(project: str, proposal_text: str | None) -> dict[str,
     missing_info = _missing_information(normalized)
     assumptions = _assumptions(project_type, missing_info)
     risks = _risks(complexity, integrations, missing_info)
+    ambiguity_score, ambiguity_level = _estimate_ambiguity(normalized, features, missing_info, clarity)
+    discovery_questions = _build_discovery_questions(project_type, missing_info, features)
+    validation_checklist = _build_validation_checklist(missing_info, ambiguity_level, feasibility)
+    kickoff_recommendation = _kickoff_recommendation(ambiguity_level, missing_info, feasibility)
 
     return {
         "source": "proposal_text",
@@ -120,6 +138,12 @@ def build_proposal_profile(project: str, proposal_text: str | None) -> dict[str,
         "assumptions": assumptions,
         "risks": risks,
         "confidence": _confidence(clarity, missing_info),
+        "ambiguity_score": ambiguity_score,
+        "ambiguity_level": ambiguity_level,
+        "discovery_questions": discovery_questions,
+        "validation_checklist": validation_checklist,
+        "kickoff_recommendation": kickoff_recommendation,
+        "scope_lock_ready": kickoff_recommendation == "ready_for_scope_lock",
     }
 
 
@@ -158,6 +182,25 @@ def _default_profile(project: str) -> dict[str, Any]:
             "Environment dependency delays for external integrations.",
         ],
         "confidence": "media",
+        "ambiguity_score": 0.66,
+        "ambiguity_level": "alta",
+        "discovery_questions": [
+            "Qual problema de negocio deve ser resolvido primeiro?",
+            "Qual e o fluxo minimo de ponta a ponta do MVP?",
+            "Quais integracoes sao obrigatorias no go-live?",
+            "Qual janela de prazo e orcamento aprovada?",
+            "Quais metricas definem sucesso da primeira entrega?",
+            "Quais requisitos de seguranca/compliance sao obrigatorios?",
+        ],
+        "validation_checklist": [
+            "Objetivo de negocio validado com responsavel.",
+            "Escopo inicial e fora de escopo aprovados.",
+            "Stack e integracoes criticas aprovadas.",
+            "Riscos e dependencias com owner definido.",
+            "Gaps de discovery fechados antes de kickoff.",
+        ],
+        "kickoff_recommendation": "discovery_required",
+        "scope_lock_ready": False,
     }
 
 
@@ -313,6 +356,103 @@ def _confidence(clarity: float, missing_info: list[str]) -> str:
     if clarity < 0.45 or len(missing_info) >= 5:
         return "baixa"
     return "media"
+
+
+def _estimate_ambiguity(
+    normalized_text: str,
+    features: list[str],
+    missing_info: list[str],
+    clarity: float,
+) -> tuple[float, str]:
+    score = 0.25
+    if len(normalized_text) < 180:
+        score += 0.15
+    if len(features) <= 2:
+        score += 0.15
+    score += min(0.30, len(missing_info) * 0.05)
+    if any(token in normalized_text for token in _VAGUE_SIGNALS):
+        score += 0.15
+    score += max(0.0, (0.65 - clarity) * 0.35)
+    score = round(min(0.95, score), 2)
+
+    if score >= 0.68:
+        return score, "alta"
+    if score >= 0.45:
+        return score, "media"
+    return score, "baixa"
+
+
+def _build_discovery_questions(project_type: str, missing_info: list[str], features: list[str]) -> list[str]:
+    by_gap = {
+        "target_users": "Quem e o usuario principal e qual dor concreta ele sente hoje?",
+        "budget": "Qual faixa de orcamento aprovada para MVP e para evolucao?",
+        "deadline": "Qual prazo limite real e qual margem de negociacao?",
+        "success_metrics": "Quais metricas objetivas definem sucesso da primeira entrega?",
+        "non_functional_requirements": "Quais limites de performance, disponibilidade e escala sao obrigatorios?",
+        "compliance_constraints": "Quais requisitos de seguranca/compliance sao obrigatorios desde o dia 1?",
+    }
+    track_questions = {
+        "frontend": [
+            "Quais jornadas de tela sao criticas para o MVP?",
+            "Quais regras de design/acessibilidade sao obrigatorias?",
+        ],
+        "backend": [
+            "Quais contratos de API e SLAs sao obrigatorios no primeiro release?",
+            "Quais regras de autorizacao e auditoria devem ser aplicadas?",
+        ],
+        "automacao": [
+            "Quais eventos disparam o fluxo e qual comportamento de retry esperado?",
+            "Qual plano de monitoramento/alerta para falhas de automacao?",
+        ],
+        "hibrido": [
+            "Qual fluxo ponta a ponta deve ser validado primeiro (UI + API + integracoes)?",
+            "Qual criterio define prontidao para integrar as camadas em producao?",
+        ],
+    }
+
+    questions: list[str] = []
+    for gap in missing_info:
+        question = by_gap.get(gap)
+        if question:
+            questions.append(question)
+
+    questions.extend(track_questions.get(project_type, track_questions["hibrido"]))
+    if len(features) <= 2:
+        questions.append("Quais funcionalidades devem ficar explicitamente fora do MVP para reduzir risco?")
+    questions.extend(
+        [
+            "Quem aprova escopo, prazo e mudancas durante o projeto?",
+            "Quais dependencias externas podem bloquear entrega e qual plano de contingencia?",
+        ]
+    )
+    return _unique_keep_order(questions)[:10]
+
+
+def _build_validation_checklist(missing_info: list[str], ambiguity_level: str, feasibility: str) -> list[str]:
+    checklist = [
+        "Objetivo de negocio validado com decisor responsavel.",
+        "Escopo inicial e fora de escopo formalizados.",
+        "Backlog MVP com criterios de aceite revisados.",
+        "Stack e integracoes criticas aprovadas.",
+        "Riscos, dependencias e owners registrados.",
+    ]
+    if missing_info:
+        checklist.append(f"Fechar {len(missing_info)} gap(s) de discovery antes de travar escopo.")
+    if ambiguity_level == "alta":
+        checklist.append("Executar workshop de discovery guiado antes do kickoff tecnico.")
+    if feasibility == "baixa":
+        checklist.append("Replanejar escopo e viabilidade antes de assumir compromisso comercial.")
+    return checklist
+
+
+def _kickoff_recommendation(ambiguity_level: str, missing_info: list[str], feasibility: str) -> str:
+    if feasibility == "baixa":
+        return "replan_required"
+    if ambiguity_level == "alta" or len(missing_info) >= 3:
+        return "discovery_required"
+    if missing_info:
+        return "discovery_light_required"
+    return "ready_for_scope_lock"
 
 
 def _display_path(repo_root: Path, path: Path) -> Path:

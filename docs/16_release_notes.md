@@ -25,3 +25,11 @@ Gerado e atualizado automaticamente pelo pipeline.
 - Runner operacional `scripts/run_pipeline.py` com `--proposal-file` e `--strict-external`
 - Validacao piloto ponta a ponta para proposta de cliente (decisao `GO_COM_RESSALVAS`)
 - Suite de testes expandida para 35 testes
+
+## Release 0.3.3 - 2026-03-11
+- Tratamento robusto de proposta vaga com score de ambiguidade e recomendacao de kickoff
+- Novo pacote de discovery e gate:
+  - `docs/27_descoberta_guiada.md`
+  - `docs/28_validacao_pre_kickoff.md`
+- Backlog dinamico prioriza discovery quando gaps criticos estao abertos
+- Suite de testes expandida para 37 testes

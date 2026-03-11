@@ -1,5 +1,11 @@
 # Template de Proposta de Cliente
 
+## 0. Quando o cliente nao sabe exatamente o que quer
+- Descreva o problema atual em 3 frases.
+- Informe o que hoje mais gera retrabalho/perda de tempo.
+- Liste 1 a 3 resultados que seriam valiosos nos proximos 90 dias.
+- Mesmo sem escopo fechado, registre restricoes de prazo e budget, se houver.
+
 ## 1. Objetivo de negocio
 - Qual problema queremos resolver?
 - Qual impacto esperado em receita, custo ou produtividade?

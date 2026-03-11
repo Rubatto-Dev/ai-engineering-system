@@ -21,6 +21,8 @@ REQUIRED_DOCS = [
     "14_observability.md",
     "15_security_threats.md",
     "16_release_notes.md",
+    "27_descoberta_guiada.md",
+    "28_validacao_pre_kickoff.md",
 ]
 
 

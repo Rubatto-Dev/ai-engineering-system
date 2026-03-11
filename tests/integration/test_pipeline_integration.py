@@ -7,6 +7,7 @@ import pytest
 from ai_engineering_os.agents.scope import ScopeDefinitionAgent
 from ai_engineering_os.models import AgentResult, ProjectContext
 from ai_engineering_os.pipeline import EngineeringPipeline
+from ai_engineering_os.proposal_profile import build_proposal_profile
 
 
 @pytest.mark.integration
@@ -100,3 +101,32 @@ def test_pipeline_with_proposal_profile_generates_assessment_doc(tmp_path: Path)
 
     assert result["status"] == "success"
     assert (tmp_path / "docs" / "26_proposta_avaliacao.md").exists()
+    assert (tmp_path / "docs" / "27_descoberta_guiada.md").exists()
+    assert (tmp_path / "docs" / "28_validacao_pre_kickoff.md").exists()
+
+
+@pytest.mark.integration
+def test_pipeline_with_vague_proposal_generates_discovery_gates(tmp_path: Path) -> None:
+    pipeline = EngineeringPipeline(tmp_path)
+    proposal_text = "Quero um app para meu negocio. Ainda nao sei exatamente o escopo."
+    profile = build_proposal_profile("proposal-vaga", proposal_text)
+
+    result = pipeline.run(
+        project="proposal-vaga",
+        cycle=1,
+        mode="autopilot_safe",
+        proposal_profile=profile,
+        proposal_text=proposal_text,
+        proposal_file="proposals/vaga.md",
+    )
+
+    assert result["status"] == "success"
+    discovery_doc = tmp_path / "docs" / "27_descoberta_guiada.md"
+    pre_kickoff_doc = tmp_path / "docs" / "28_validacao_pre_kickoff.md"
+    assert discovery_doc.exists()
+    assert pre_kickoff_doc.exists()
+
+    discovery_content = discovery_doc.read_text(encoding="utf-8").lower()
+    pre_kickoff_content = pre_kickoff_doc.read_text(encoding="utf-8").lower()
+    assert "ambiguidade: alta" in discovery_content
+    assert "kickoff_ready: false" in pre_kickoff_content

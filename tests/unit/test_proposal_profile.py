@@ -48,3 +48,17 @@ def test_load_proposal_text_reads_relative_file(tmp_path: Path) -> None:
 
     assert relative_path == "proposals\\brief.md" or relative_path == "proposals/brief.md"
     assert text == "Projeto com foco em API e dashboard."
+
+
+@pytest.mark.unit
+def test_build_proposal_profile_marks_vague_brief_as_high_ambiguity() -> None:
+    text = "Quero um app para meu negocio. Ainda nao sei exatamente o escopo, so que precisa ajudar vendas."
+
+    profile = build_proposal_profile("cliente-gama", text)
+
+    assert profile["ambiguity_level"] == "alta"
+    assert profile["ambiguity_score"] >= 0.68
+    assert profile["kickoff_recommendation"] in {"discovery_required", "replan_required"}
+    assert profile["scope_lock_ready"] is False
+    assert isinstance(profile["discovery_questions"], list)
+    assert len(profile["discovery_questions"]) >= 6
