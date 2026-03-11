@@ -66,6 +66,20 @@
 - Monitoramento pos-merge concluido sem incidentes.
 - Proximo ciclo recomendado: iniciar Fase 3 (auditoria final e release candidato).
 
+## Atualizacao Fase 3 (2026-03-11)
+
+- Fluxo de proposta de cliente habilitado:
+  - `JARVIS: START project=<name> proposal_file=<path>`
+- Time de agentes agora gera avaliacao inicial com:
+  - valor estimado
+  - viabilidade
+  - duracao media
+  - stack recomendada
+  - riscos e informacoes pendentes
+- Novos artefatos de suporte:
+  - `docs/26_proposta_avaliacao.md`
+  - `docs/30_template_proposta_cliente.md`
+
 ## Como retomar rapido no Codex
 
 1. Abrir terminal na pasta:

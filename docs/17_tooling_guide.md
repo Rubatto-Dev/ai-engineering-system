@@ -44,3 +44,13 @@
 - Run `npm run audit:safety` to execute a consolidated release-safety audit.
 - The command generates `docs/audits/release_safety_report.json`.
 - Release candidate is ready only when report field `ok` is `true`.
+
+## Proposal Intake
+
+- Save the client proposal file in the repository (example: `proposals/cliente_x.md`).
+- Start with proposal context:
+  - `JARVIS: START project=<name> proposal_file=proposals/cliente_x.md`
+- Run execution cycle to produce proposal assessment:
+  - `JARVIS: EXEC cycle=1 mode=autopilot_safe`
+- Core output:
+  - `docs/26_proposta_avaliacao.md`

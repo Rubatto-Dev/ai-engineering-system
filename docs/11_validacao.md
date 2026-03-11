@@ -196,3 +196,23 @@
   - `npm run quality:python` -> `ok: true`
   - `npm run runtime:check` -> `ok: true`
   - `npm run audit:safety` -> `ok: true`
+
+### Etapa 13 - Time de agentes para proposta de cliente
+
+- Mudanca:
+  - novo modulo `src/ai_engineering_os/proposal_profile.py`
+  - `JARVIS: START` com suporte a `proposal_file=<path>`
+  - pipeline com `proposal_profile` propagado para agentes
+  - agentes reforcados para gerar docs orientados a valor/viabilidade/tempo/stack/riscos
+- Cobertura adicionada:
+  - `tests/unit/test_proposal_profile.py`
+  - `tests/unit/test_jarvis_proposal.py`
+  - `tests/integration/test_pipeline_integration.py` (cenario com proposta)
+- Documentacao adicionada:
+  - `docs/30_template_proposta_cliente.md`
+  - `README.md` com fluxo de proposta de cliente
+- Validacao da etapa:
+  - `npm run test:python` -> `34 passed`
+  - `npm run quality:python` -> `ok: true`
+  - `npm run runtime:check` -> `ok: true`
+  - `npm run audit:safety` -> `ok: true`

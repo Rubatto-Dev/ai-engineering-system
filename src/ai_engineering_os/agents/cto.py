@@ -16,7 +16,12 @@ class CtoAgent(BaseAgent):
 
     def run(self, context: ProjectContext, state: dict[str, Any]) -> AgentResult:
         logger.info("Running CTO Agent for project=%s", context.project)
-        stack = ["Python 3.11", "Pytest", "SonarQube", "MCP adapters", "Structured docs"]
+        proposal_profile = state.get("proposal_profile", {})
+        stack = proposal_profile.get("recommended_stack", ["Python 3.11", "Pytest", "SonarQube", "MCP adapters"])
+        if not isinstance(stack, list) or not stack:
+            stack = ["Python 3.11", "Pytest", "SonarQube", "MCP adapters", "Structured docs"]
+        project_type = str(proposal_profile.get("project_type", "hibrido"))
+        feasibility = str(proposal_profile.get("feasibility", "media"))
         adr1 = self._write(
             "docs/decisions/ADR-0001.md",
             "\n".join(
@@ -31,6 +36,8 @@ class CtoAgent(BaseAgent):
                     "",
                     "## Consequences",
                     "Improved auditability and easier testability of pipeline behavior.",
+                    f"Selected technical track: {project_type}.",
+                    f"Feasibility level at decision time: {feasibility}.",
                 ]
             ),
         )

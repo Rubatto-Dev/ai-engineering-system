@@ -29,6 +29,14 @@ class DocumentationQaAgent(BaseAgent):
     def run(self, context: ProjectContext, state: dict[str, Any]) -> AgentResult:
         logger.info("Running Documentation QA for project=%s", context.project)
         qa = self.validate(required_doc_paths(self.repo_root))
+        proposal_profile = state.get("proposal_profile", {})
+        proposal_required = isinstance(proposal_profile, dict) and bool(proposal_profile.get("proposal_present"))
+        proposal_doc_ok = True
+        if proposal_required:
+            proposal_doc = self.repo_root / "docs" / "26_proposta_avaliacao.md"
+            proposal_doc_ok = proposal_doc.exists() and bool(proposal_doc.read_text(encoding="utf-8").strip())
+            qa["proposal_assessment_doc_ok"] = proposal_doc_ok
+            qa["ok"] = bool(qa["ok"]) and proposal_doc_ok
         validation_path = self._write(
             "docs/11_validacao.md",
             "\n".join(
@@ -38,6 +46,7 @@ class DocumentationQaAgent(BaseAgent):
                     f"- ok: {qa['ok']}",
                     f"- missing: {len(qa['missing'])}",
                     f"- empty: {len(qa['empty'])}",
+                    f"- proposal_assessment_doc_ok: {proposal_doc_ok}",
                     "",
                     "## Sequential Thinking Trace",
                     *self.sequential.decompose(

@@ -16,13 +16,25 @@ class DataModelingAgent(BaseAgent):
 
     def run(self, context: ProjectContext, state: dict[str, Any]) -> AgentResult:
         logger.info("Running Data Modeling for project=%s", context.project)
-        entities = [
+        base_entities = [
             "project",
             "agent_execution",
             "artifact",
             "quality_gate_report",
             "memory_record",
         ]
+        proposal_profile = state.get("proposal_profile", {})
+        features = proposal_profile.get("key_features", [])
+        domain_entities: list[str] = []
+        if isinstance(features, list):
+            for feature in features[:4]:
+                token = str(feature).lower()
+                candidate = token.split(":")[0].split(",")[0].strip()
+                candidate = candidate.replace(" ", "_")
+                candidate = "".join(ch for ch in candidate if ch.isalnum() or ch == "_")
+                if len(candidate) >= 5:
+                    domain_entities.append(candidate[:40])
+        entities = list(dict.fromkeys(base_entities + domain_entities))
 
         model_path = self._write(
             "docs/06_modelo_dados.md",

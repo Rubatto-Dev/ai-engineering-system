@@ -73,3 +73,30 @@ def test_pipeline_stops_when_handoff_contract_is_violated(tmp_path: Path, monkey
     traces = result["stages"]
     assert traces[-1]["agent_id"] == "03"
     assert traces[-1]["checks"]["contract_handoff_match"] is False
+
+
+@pytest.mark.integration
+def test_pipeline_with_proposal_profile_generates_assessment_doc(tmp_path: Path) -> None:
+    pipeline = EngineeringPipeline(tmp_path)
+    profile = {
+        "proposal_present": True,
+        "project_type": "hibrido",
+        "estimated_duration_weeks": {"min": 4, "avg": 7, "max": 10},
+        "key_features": ["Client proposal intake", "Feasibility scoring", "Professional documentation output"],
+        "recommended_stack": ["Python 3.11", "FastAPI", "React", "PostgreSQL"],
+        "integrations": ["github", "sonarqube"],
+        "missing_information": ["budget", "success_metrics"],
+        "value_hypothesis": "Improve qualification quality before project commitment.",
+    }
+
+    result = pipeline.run(
+        project="proposal-gamma",
+        cycle=1,
+        mode="autopilot_safe",
+        proposal_profile=profile,
+        proposal_text="Projeto para validar propostas de clientes com qualidade.",
+        proposal_file="proposals/gamma.md",
+    )
+
+    assert result["status"] == "success"
+    assert (tmp_path / "docs" / "26_proposta_avaliacao.md").exists()

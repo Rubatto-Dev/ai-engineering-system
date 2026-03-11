@@ -99,5 +99,6 @@
   - etapa 10: emitir recomendacao final de merge com evidencias de gate
   - etapa 11: merge no main e registro de release notes finais
   - etapa 12: monitoramento pos-merge e encerramento operacional da entrega
+  - etapa 13: habilitar fluxo de proposta de cliente para avaliacao e documentacao automatizada
 - Proxima etapa:
-  - etapa 13: iniciar Fase 3 (auditoria final e release candidato)
+  - etapa 14: validar fluxo com proposta real de cliente e calibrar estimativas

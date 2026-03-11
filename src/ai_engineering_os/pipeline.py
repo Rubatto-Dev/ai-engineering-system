@@ -16,7 +16,15 @@ class EngineeringPipeline:
         ensure_structure(self.repo_root)
         return [agent.stage for agent in build_agent_team(self.repo_root)]
 
-    def run(self, project: str, cycle: int, mode: str) -> dict[str, object]:
+    def run(
+        self,
+        project: str,
+        cycle: int,
+        mode: str,
+        proposal_profile: dict[str, object] | None = None,
+        proposal_text: str | None = None,
+        proposal_file: str | None = None,
+    ) -> dict[str, object]:
         ensure_structure(self.repo_root)
         context = ProjectContext(project=project, cycle=cycle, mode=mode)
         team = build_agent_team(self.repo_root)
@@ -30,6 +38,9 @@ class EngineeringPipeline:
                 "sequential_thinking": "enabled",
                 "sonarqube": "configured",
             },
+            "proposal_profile": proposal_profile or {},
+            "proposal_text": proposal_text or "",
+            "proposal_file": proposal_file,
         }
 
         for agent in team:

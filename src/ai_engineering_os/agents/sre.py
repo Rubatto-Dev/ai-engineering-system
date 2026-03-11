@@ -26,6 +26,7 @@ class SreAgent(BaseAgent):
                     "- Build",
                     "- Unit/Integration/E2E tests",
                     "- SonarQube quality gate",
+                    "- Proposal feasibility and release-safety audit",
                     "- Controlled rollout",
                 ]
             ),
@@ -40,6 +41,7 @@ class SreAgent(BaseAgent):
                     "- Trace correlation by cycle",
                     "- Agent stage latency",
                     "- Quality gate metrics",
+                    "- Release safety metrics (tests_ok, quality_ok, runtime_ok, strict_audit_ok)",
                 ]
             ),
         )

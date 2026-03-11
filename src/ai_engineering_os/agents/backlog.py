@@ -14,7 +14,42 @@ class BacklogAgent(BaseAgent):
     agent_name = "Backlog Engineer"
     stage = "Backlog Generation"
 
-    def generate(self, project: str) -> list[BacklogItem]:
+    def generate(self, project: str, proposal_profile: dict[str, Any] | None = None) -> list[BacklogItem]:
+        if proposal_profile:
+            features = proposal_profile.get("key_features", [])
+            duration = proposal_profile.get("estimated_duration_weeks", {"avg": 6})
+            if isinstance(features, list) and features:
+                dynamic_items: list[BacklogItem] = []
+                for index, feature in enumerate(features[:4], start=1):
+                    item_id = f"BL-{index:03d}"
+                    effort = max(2, min(8, int(duration.get("avg", 6) / 2)))
+                    dynamic_items.append(
+                        BacklogItem(
+                            item_id=item_id,
+                            description=f"Implement and validate: {feature}",
+                            priority="high" if index <= 2 else "medium",
+                            effort=effort,
+                            acceptance_criteria=[
+                                f"Feature delivered for proposal objective: {feature}",
+                                "Documentation and tests updated with traceability",
+                            ],
+                        )
+                    )
+
+                dynamic_items.append(
+                    BacklogItem(
+                        item_id=f"BL-{len(dynamic_items) + 1:03d}",
+                        description="Run feasibility, quality gate, and runtime validation before execution start",
+                        priority="high",
+                        effort=3,
+                        acceptance_criteria=[
+                            "test:python, quality:python, runtime:check all successful",
+                            "Proposal evaluation and risk docs approved",
+                        ],
+                    )
+                )
+                return dynamic_items
+
         return [
             BacklogItem(
                 item_id="BL-001",
@@ -60,7 +95,8 @@ class BacklogAgent(BaseAgent):
 
     def run(self, context: ProjectContext, state: dict[str, Any]) -> AgentResult:
         logger.info("Running Backlog Engineer for project=%s", context.project)
-        items = self.generate(context.project)
+        proposal_profile = state.get("proposal_profile", {})
+        items = self.generate(context.project, proposal_profile if isinstance(proposal_profile, dict) else None)
         lines = ["# Backlog", ""]
         for item in items:
             lines.append(f"## {item.item_id} - {item.description}")

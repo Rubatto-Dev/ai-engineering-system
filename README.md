@@ -12,10 +12,30 @@ Sistema de engenharia assistida por IA orientado por agentes, com protocolo Jarv
 ## Comandos Jarvis
 
 - `JARVIS: START project=<name>`
+- `JARVIS: START project=<name> proposal_file=<relative_path>`
 - `JARVIS: PLAN cycle=<n>`
 - `JARVIS: EXEC cycle=<n> mode=autopilot_safe`
 - `JARVIS: AUDIT repo=<name>`
 - `JARVIS: SHIP version=<semver>`
+
+## Fluxo de proposta de cliente
+
+1. Salvar a proposta em arquivo de texto/markdown no repositorio, por exemplo:
+   - `proposals/cliente_acme.md`
+2. Iniciar o projeto com a proposta:
+   - `JARVIS: START project=acme proposal_file=proposals/cliente_acme.md`
+3. Planejar e executar:
+   - `JARVIS: PLAN cycle=1`
+   - `JARVIS: EXEC cycle=1 mode=autopilot_safe`
+4. Validar:
+   - `npm run test:python`
+   - `npm run quality:python`
+   - `npm run runtime:check`
+   - `npm run audit:safety`
+
+Saidas principais geradas para avaliacao inicial:
+- `docs/26_proposta_avaliacao.md` (valor, viabilidade, estimativa, stack, riscos e gaps)
+- `docs/01_visao.md`, `docs/02_requisitos.md`, `docs/05_arquitetura.md`, `docs/10_backlog.md`
 
 ## Checks operacionais rapidos
 

@@ -42,18 +42,21 @@ class IdeaValidatorAgent(BaseAgent):
 
     def run(self, context: ProjectContext, state: dict[str, Any]) -> AgentResult:
         logger.info("Running Idea Validator for project=%s", context.project)
-        metrics = state.get(
-            "idea_metrics",
-            {
-                "clarity": 0.85,
-                "complexity": 0.35,
-                "dependency_risk": 0.30,
-                "operational_risk": 0.25,
-                "time_confidence": 0.80,
-                "cost_confidence": 0.75,
-            },
-        )
+        proposal_profile = state.get("proposal_profile", {})
+        metrics = self._build_metrics(proposal_profile, state)
         outcome = self.evaluate(metrics)
+        feasibility = str(proposal_profile.get("feasibility", "media"))
+        value_hypothesis = str(
+            proposal_profile.get(
+                "value_hypothesis",
+                f"Deliver measurable engineering value for {context.project}.",
+            )
+        )
+        duration = proposal_profile.get("estimated_duration_weeks", {"min": 4, "avg": 6, "max": 8})
+        risks = proposal_profile.get("risks", ["No critical blockers identified with current data."])
+        missing_info = proposal_profile.get("missing_information", [])
+        stack = proposal_profile.get("recommended_stack", ["Python 3.11", "Pytest", "SonarQube"])
+        features = proposal_profile.get("key_features", [])
 
         risks_doc = self._write(
             "docs/09_riscos.md",
@@ -64,9 +67,52 @@ class IdeaValidatorAgent(BaseAgent):
 
 - decisao: {decision}
 - score: {score}
-- risco_operacional: monitorado
-- risco_dependencias: monitorado
-            """.format(decision=outcome["decision"], score=outcome["score"]),
+- viabilidade: {feasibility}
+- estimativa_semanas: {duration_min}-{duration_max}
+
+## Riscos Identificados
+{risks}
+            """.format(
+                decision=outcome["decision"],
+                score=outcome["score"],
+                feasibility=feasibility,
+                duration_min=duration.get("min", 4),
+                duration_max=duration.get("max", 8),
+                risks="\n".join([f"- {risk}" for risk in risks]),
+            ),
+        )
+        proposal_eval_doc = self._write(
+            "docs/26_proposta_avaliacao.md",
+            "\n".join(
+                [
+                    "# Avaliacao de Proposta",
+                    "",
+                    f"- projeto: {context.project}",
+                    f"- decisao: {outcome['decision']}",
+                    f"- score: {outcome['score']}",
+                    f"- viabilidade: {feasibility}",
+                    f"- valor_estimado_score: {proposal_profile.get('value_score', 0.62)}",
+                    (
+                        f"- duracao_estimada_semanas: {duration.get('min', 4)}-"
+                        f"{duration.get('max', 8)} (media {duration.get('avg', 6)})"
+                    ),
+                    "",
+                    "## Hipotese de Valor",
+                    f"- {value_hypothesis}",
+                    "",
+                    "## Features Principais",
+                    *[f"- {feature}" for feature in features],
+                    "",
+                    "## Stack Recomendada",
+                    *[f"- {item}" for item in stack],
+                    "",
+                    "## Riscos",
+                    *[f"- {risk}" for risk in risks],
+                    "",
+                    "## Informacoes Pendentes",
+                    *[f"- {gap}" for gap in missing_info],
+                ]
+            ),
         )
 
         status = "success" if outcome["decision"] != "NO_GO" else "failed"
@@ -75,9 +121,40 @@ class IdeaValidatorAgent(BaseAgent):
             agent_name=self.agent_name,
             stage=self.stage,
             status=status,
-            artifacts=[risks_doc],
+            artifacts=[risks_doc, proposal_eval_doc],
             notes=f"decision={outcome['decision']} score={outcome['score']}",
-            checks={"decision": outcome["decision"]},
+            checks={"decision": outcome["decision"], "proposal_profile_loaded": bool(proposal_profile)},
             outputs={"idea_decision": outcome["decision"], "idea_score": outcome["score"]},
             handoff="08",
+        )
+
+    def _build_metrics(self, proposal_profile: Any, state: dict[str, Any]) -> dict[str, float]:
+        if isinstance(proposal_profile, dict) and proposal_profile:
+            complexity = float(proposal_profile.get("complexity_score", 0.35))
+            clarity = float(proposal_profile.get("clarity_score", 0.80))
+            integrations = proposal_profile.get("integrations", [])
+            missing_info = proposal_profile.get("missing_information", [])
+            dependency_risk = min(0.85, 0.20 + len(integrations) * 0.08) if isinstance(integrations, list) else 0.30
+            operational_risk = min(0.90, 0.18 + len(missing_info) * 0.06) if isinstance(missing_info, list) else 0.30
+            confidence = str(proposal_profile.get("confidence", "media"))
+            confidence_boost = {"alta": 0.85, "media": 0.70, "baixa": 0.55}.get(confidence, 0.70)
+            return {
+                "clarity": clarity,
+                "complexity": complexity,
+                "dependency_risk": dependency_risk,
+                "operational_risk": operational_risk,
+                "time_confidence": confidence_boost,
+                "cost_confidence": confidence_boost - 0.05,
+            }
+
+        return state.get(
+            "idea_metrics",
+            {
+                "clarity": 0.85,
+                "complexity": 0.35,
+                "dependency_risk": 0.30,
+                "operational_risk": 0.25,
+                "time_confidence": 0.80,
+                "cost_confidence": 0.75,
+            },
         )

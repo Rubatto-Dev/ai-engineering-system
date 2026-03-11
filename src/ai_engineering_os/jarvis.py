@@ -7,6 +7,7 @@ from typing import Any
 from .command_protocol import JarvisCommand, parse_command
 from .external_runtime import evaluate_runtime_readiness
 from .pipeline import EngineeringPipeline
+from .proposal_profile import build_proposal_profile, load_proposal_text
 from .quality_gate import evaluate_quality_gate
 from .repository import ensure_structure
 
@@ -20,6 +21,9 @@ class JarvisEngine:
 
         self.last_exec_result: dict[str, Any] | None = None
         self.last_audit_result: dict[str, Any] | None = None
+        self.current_proposal_file: str | None = None
+        self.current_proposal_text: str | None = None
+        self.current_proposal_profile: dict[str, Any] | None = None
         self._exec_counter = 0
         self._last_exec_counter: int | None = None
         self._audited_exec_counter: int | None = None
@@ -42,12 +46,39 @@ class JarvisEngine:
         self.current_project = command.args["project"]
         self.last_exec_result = None
         self.last_audit_result = None
+        self.current_proposal_file = None
+        self.current_proposal_text = None
+        self.current_proposal_profile = None
         self._exec_counter = 0
         self._last_exec_counter = None
         self._audited_exec_counter = None
 
+        proposal_arg = command.args.get("proposal_file")
+        proposal_path, proposal_text = load_proposal_text(self.repo_root, proposal_arg)
+        profile = build_proposal_profile(self.current_project, proposal_text)
+        self.current_proposal_file = proposal_path
+        self.current_proposal_text = proposal_text
+        self.current_proposal_profile = profile
+
+        proposal_notice = "sem arquivo de proposta"
+        if proposal_arg:
+            proposal_notice = f"arquivo solicitado: {proposal_arg}"
+        if proposal_path:
+            proposal_notice = f"proposta carregada: {proposal_path}"
+
         (self.repo_root / "docs" / "01_visao.md").write_text(
-            f"# Visao\n\nProjeto iniciado: {self.current_project}\n",
+            "\n".join(
+                [
+                    "# Visao",
+                    "",
+                    f"Projeto iniciado: {self.current_project}",
+                    f"Tipo inferido: {profile['project_type']}",
+                    f"Feasibility: {profile['feasibility']}",
+                    f"Estimativa (semanas): {profile['estimated_duration_weeks']['min']} - {profile['estimated_duration_weeks']['max']}",
+                    f"Observacao de proposta: {proposal_notice}",
+                    "",
+                ]
+            ),
             encoding="utf-8",
         )
         return {
@@ -56,6 +87,9 @@ class JarvisEngine:
             "protocol": "jarvis_command_protocol",
             "context7": "enabled",
             "sequential_thinking": "enabled",
+            "proposal_loaded": bool(proposal_path),
+            "proposal_file": proposal_path,
+            "proposal_profile": profile,
         }
 
     def _plan(self, command: JarvisCommand) -> dict[str, object]:
@@ -78,6 +112,9 @@ class JarvisEngine:
             project=self.current_project or "unknown",
             cycle=cycle,
             mode=mode,
+            proposal_profile=self.current_proposal_profile,
+            proposal_text=self.current_proposal_text,
+            proposal_file=self.current_proposal_file,
         )
         self.last_exec_result = result
         self.last_audit_result = None

@@ -13,3 +13,9 @@ Gerado e atualizado automaticamente pelo pipeline.
 - Release safety audit com `ok: true`
 - PR de consolidacao integrado no `main`
 - Monitoramento pos-merge concluido sem incidentes
+
+## Release 0.3.1 - 2026-03-11
+- Fluxo de proposta de cliente integrado ao `START/EXEC`
+- Avaliacao automatizada de valor, viabilidade, duracao e stack recomendada
+- Geracao de documentacao base para tomada de decisao pre-execucao
+- Suite de testes expandida para cobrir cenario de proposta (34 testes)

@@ -20,8 +20,9 @@
   - Ajustes de observabilidade operacional
 
 ### Fase 3 - Auditoria e release candidato (2026-03-22 a 2026-03-28)
-- Status: ready_to_start
+- Status: in_progress
 - Objetivo:
   - Auditoria completa de seguranca e qualidade
   - Preparacao de release notes e pacote de ship
   - Validacao final de gate antes de versao estavel
+  - Intake de propostas de cliente com avaliacao de valor e viabilidade antes da execucao
