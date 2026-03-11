@@ -96,5 +96,6 @@
   - etapa 7: criar branch, commit e publicar PR interno de consolidacao
   - etapa 8: publicar checklist de revisao e criterio de merge do PR
   - etapa 9: consolidar plano de risco e rollback para merge seguro
+  - etapa 10: emitir recomendacao final de merge com evidencias de gate
 - Proxima etapa:
-  - etapa 10: aplicar review final no PR e decidir merge
+  - etapa 11: executar merge no PR e registrar release notes finais

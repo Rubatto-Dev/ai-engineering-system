@@ -159,3 +159,15 @@
   - procedimento de rollback pos-merge
 - Validacao da etapa:
   - validacao tecnica reexecutada apos atualizacao documental
+
+### Etapa 10 - Recomendacao final de merge
+
+- Mudanca:
+  - novo documento `docs/24_pr_merge_recommendation.md`
+- Cobertura adicionada:
+  - decisao `approved` com gates e condicao de merge
+- Validacao da etapa:
+  - `npm run test:python` -> `28 passed`
+  - `npm run quality:python` -> `ok: true`
+  - `npm run runtime:check` -> `ok: true`
+  - `npm run audit:safety` -> `ok: true`
